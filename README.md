@@ -1,2 +1,8 @@
-# CG
-Repositório para atividades da disciplina de Computação Gráfica ofertada no curso de Ciência da Computação na UFSCar - Sorocaba.
+# Computação Gráfica
+
+### Membros da Equipe
+Giovanna Blasco Martin (620378)
+
+Mateus Silva Vasconcelos (620580)
+
+Matheus da Silva Jesus (620025)
