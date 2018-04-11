@@ -11,12 +11,13 @@
 	<body>
 		<script src="../three/three.js"></script>
     <script src="../three/OBJLoader.js"></script>
-
+	<script src="../three/OrbitControls.js"></script>
+	
 		<script>
       //cria cena
-	  var obj_carregado;
+	  var obj_carregado =  new THREE.Mesh();
       var scene = new THREE.Scene();
-
+	  
 	//  var plano_do_chao = THREE.PlaneGeometry(10,10,1 ) // vetor normal como parametro
 	  //var malha_do_chao = new THREE.MeshStandardMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
 	 // var chao = new THREE.Mesh( plano_do_chao, malha_do_chao );
@@ -24,15 +25,15 @@
       //cria camera com (FOV, aspect radio, near, far)
       var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-
+	  
 		//var ambientLight = new THREE.AmbientLight( 0xcccccc, 0.6 );
 		//scene.add( ambientLight );
-
-
-		var light = new THREE.PointLight(0xffffff);
+		
+		
+		    var light = new THREE.PointLight(0xffffff);
     light.position.set(-100,200,100);
     scene.add(light);
-
+		
 		scene.background =new THREE.Color("blue");
 			var manager = new THREE.LoadingManager();
 				manager.onProgress = function ( item, loaded, total ) {
@@ -47,14 +48,14 @@
 			};
 			var onError = function ( xhr ) {
 			console.log( 'An error happened: ' +xhr );
-
+			
 			};
-
-
+			
+			
 			var loader = new THREE.OBJLoader(manager);
-			loader.load(
+			loader.load( 
 			'mojo.obj', function ( object ) {
-
+				
 				obj_carregado = object;
 				object.position.y = 0;
 				object.position.x = 0;
@@ -63,6 +64,11 @@
 				scene.add( object );
 			}, onProgress, onError );
 
+			
+			
+
+			
+			
 			camera.position.z = 5;
 			camera.position.y = 1;
 			camera.position.x = 0;
@@ -74,11 +80,11 @@
 			// Linkando a textura ao objeto
 			var material = new THREE.MeshBasicMaterial( {map:texture, side: THREE.DoubleSide} );
 			var plane = new THREE.Mesh( geometry, material );
-
+			
 			// Deixando o chao que tava dipeh deitadinho
 			plane.rotation.x = 90;
 			scene.add( plane );
-
+   
 //   scene.add( ground );
 
       // renderer é o que faz o objeto aparecer na tela
@@ -91,14 +97,14 @@
       // elemento <canvas>
       document.body.appendChild( renderer.domElement );
 
-			renderer.render( scene, camera );
-
-
+			
+			
 			var animate = function () {
 				requestAnimationFrame( animate );
 
+				
 				obj_carregado.rotation.y += 0.05
-
+				
 				renderer.render(scene, camera);
 			};
 
@@ -107,3 +113,4 @@
 		</script>
 	</body>
 </html>
+
