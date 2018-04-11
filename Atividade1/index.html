@@ -38,7 +38,7 @@
 		sun.position.set(0,7, -5);
 		scene.add( sun );
 
-		scene.background = new THREE.Color("lightblue");
+		scene.background = new THREE.Color("black");
 		var manager = new THREE.LoadingManager();
 		manager.onProgress = function(item, loaded, total) {
 			console.log(item, loaded, total);
@@ -69,29 +69,29 @@
 
 
 		camera.position.z = 10;
-		camera.position.y = 3;
+		camera.position.y = 10;
 		camera.position.x = 5;
 
 		// Tamanho do objeto que imita um plano (chao)
-//		var geometry = new THREE.PlaneGeometry(10, 10, 0);
+		var geometry = new THREE.PlaneGeometry(15, 15, 0);
 		// Criando textura para por no chão
-//		var texture = new THREE.TextureLoader().load('cepo.jpg');
+		var texture = new THREE.TextureLoader().load('grama.jpg');
 		// Linkando a textura ao objeto
-//		var material = new THREE.MeshBasicMaterial({
-//			map: texture,
-//			side: THREE.DoubleSide
-//		});
-//		var plane = new THREE.Mesh(geometry, material);
+		var material = new THREE.MeshBasicMaterial({
+			map: texture,
+			side: THREE.DoubleSide
+		});
+		var plane = new THREE.Mesh(geometry, material);
 
 		// Deixando o chao que tava dipeh deitadinho
-//		plane.rotation.x = 90;
-//		scene.add(plane);
+		plane.rotation.x=-Math.PI/2;
+		scene.add(plane);
 
 		// renderer é o que faz o objeto aparecer na tela
 		var renderer = new THREE.WebGLRenderer();
 		// aqui é definido que o renderer tem tamanho da janela do browser
 		renderer.setSize(0.99*window.innerWidth, 0.99*window.innerHeight);
-		//renderer.setSize(window.innerWidth, window.innerHeight);
+		
 
 		renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -100,16 +100,21 @@
 
 		var controls = new THREE.OrbitControls( camera );
 		controls.autoRotate = true;
-		controls.autoRotateSpeed = 10;
+		controls.autoRotateSpeed = 1;
 		
 		controls.update();
 		
 		var animate = function() {
+			timestamp = Date.now() * 0.0001;
+			sun.position.x = Math.cos(timestamp * 15) * 15;
+    	sun.position.y = Math.sin(timestamp * 15) * 15;
+			light.position.x = sun.position.x;
+			light.position.y = sun.position.y;
 			requestAnimationFrame(animate);
 
 //			obj_carregado.rotation.y += -0.05;
 			renderer.render(scene, camera);
-			
+			//console.log(camera.position);
 			controls.update();
 		};
 
