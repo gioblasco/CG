@@ -25,17 +25,17 @@
 		var scene = new THREE.Scene();
 
 		//cria camera com (FOV, aspect radio, near, far)
-		var camera = new THREE.PerspectiveCamera(70, (window.innerWidth ) / window.innerHeight, 0.1, 1000);
+		var camera = new THREE.PerspectiveCamera(100, (window.innerWidth ) / window.innerHeight, 0.1, 3000);
 
 		// Setando iluminação
 		var light = new THREE.PointLight(0xffffcc);
-		light.position.set(0, 5, -2);
+		light.position.set(0, 7, -5);
 		scene.add(light);
 
-		var sun_geometry = new THREE.SphereGeometry(0.5);
+		var sun_geometry = new THREE.SphereGeometry(1);
 		var sun_material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
 		var sun = new THREE.Mesh( sun_geometry, sun_material );
-		sun.position.set(0,5,-2);
+		sun.position.set(0,7, -5);
 		scene.add( sun );
 
 		scene.background = new THREE.Color("lightblue");
@@ -60,31 +60,32 @@
 			'mojo.obj',
 			function(object) {
 				obj_carregado = object;
-				object.position.y = 0;
 				object.position.x = 0;
+				object.position.y = 0;
 				object.position.z = 0;
+				object.scale.set(2,2,2);
 				scene.add(object);
 			}, onProgress, onError);
 
 
-		camera.position.z = 5;
-		camera.position.y = 1;
-		camera.position.x = 0;
+		camera.position.z = 10;
+		camera.position.y = 3;
+		camera.position.x = 5;
 
 		// Tamanho do objeto que imita um plano (chao)
-		var geometry = new THREE.PlaneGeometry(10, 10, 0);
+//		var geometry = new THREE.PlaneGeometry(10, 10, 0);
 		// Criando textura para por no chão
-		var texture = new THREE.TextureLoader().load('grama.jpg');
+//		var texture = new THREE.TextureLoader().load('cepo.jpg');
 		// Linkando a textura ao objeto
-		var material = new THREE.MeshBasicMaterial({
-			map: texture,
-			side: THREE.DoubleSide
-		});
-		var plane = new THREE.Mesh(geometry, material);
+//		var material = new THREE.MeshBasicMaterial({
+//			map: texture,
+//			side: THREE.DoubleSide
+//		});
+//		var plane = new THREE.Mesh(geometry, material);
 
 		// Deixando o chao que tava dipeh deitadinho
-		plane.rotation.x = 90;
-		scene.add(plane);
+//		plane.rotation.x = 90;
+//		scene.add(plane);
 
 		// renderer é o que faz o objeto aparecer na tela
 		var renderer = new THREE.WebGLRenderer();
@@ -106,8 +107,7 @@
 		var animate = function() {
 			requestAnimationFrame(animate);
 
-			obj_carregado.rotation.y += 0.05
-
+//			obj_carregado.rotation.y += -0.05;
 			renderer.render(scene, camera);
 			
 			controls.update();
