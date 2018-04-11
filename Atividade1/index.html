@@ -97,14 +97,20 @@
 		// elemento <canvas>
 		document.body.appendChild(renderer.domElement);
 
-		controls = new THREE.OrbitControls( camera );
-
+		var controls = new THREE.OrbitControls( camera );
+		controls.autoRotate = true;
+		controls.autoRotateSpeed = 10;
+		
+		controls.update();
+		
 		var animate = function() {
 			requestAnimationFrame(animate);
 
 			obj_carregado.rotation.y += 0.05
 
 			renderer.render(scene, camera);
+			
+			controls.update();
 		};
 
 		animate();
