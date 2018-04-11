@@ -11,7 +11,7 @@
 	<body>
 		<script src="../three/three.js"></script>
     <script src="../three/OBJLoader.js"></script>
-		<!-- <script src="../three/OrbitControls.js"></script> -->
+		<script src="../three/OrbitControls.js"></script>
 
 		<script>
       //cria cena
@@ -23,7 +23,7 @@
 	 // var chao = new THREE.Mesh( plano_do_chao, malha_do_chao );
 	 // scene.add(chao);
       //cria camera com (FOV, aspect radio, near, far)
-      var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+      var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 3000);
 
 
 		//var ambientLight = new THREE.AmbientLight( 0xcccccc, 0.6 );
@@ -34,7 +34,7 @@
     light.position.set(-100,200,100);
     scene.add(light);
 
-		scene.background =new THREE.Color("blue");
+		scene.background =new THREE.Color("lightblue");
 			var manager = new THREE.LoadingManager();
 				manager.onProgress = function ( item, loaded, total ) {
 					console.log( item, loaded, total );
@@ -64,15 +64,14 @@
 				scene.add( object );
 			}, onProgress, onError );
 
-
 			camera.position.z = 5;
 			camera.position.y = 1;
 			camera.position.x = 0;
 
 			// Tamanho do objeto que imita um plano (chao)
-			var geometry = new THREE.PlaneGeometry(10, 20, 0);
+			var geometry = new THREE.PlaneGeometry(10, 8, 0);
 			// Criando textura para por no chão
-			var texture = new THREE.TextureLoader().load( 'grama.jpg' );
+			var texture = new THREE.TextureLoader().load( 'cepo.jpg' );
 			// Linkando a textura ao objeto
 			var material = new THREE.MeshBasicMaterial( {map:texture, side: THREE.DoubleSide} );
 			var plane = new THREE.Mesh( geometry, material );
@@ -93,11 +92,10 @@
       // elemento <canvas>
       document.body.appendChild( renderer.domElement );
 
-
+			controls = new THREE.OrbitControls( camera );
 
 			var animate = function () {
 				requestAnimationFrame( animate );
-
 
 				obj_carregado.rotation.y += 0.05
 
