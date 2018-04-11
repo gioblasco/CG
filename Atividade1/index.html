@@ -4,6 +4,7 @@
 <head>
 	<meta charset=utf-8>
 	<title>Objeto</title>
+	<link rel="shortcut icon" type="image/png" href="icone.png"/>
 	<style>
 		body {
 			margin: 0;
@@ -31,16 +32,24 @@
 		// var chao = new THREE.Mesh( plano_do_chao, malha_do_chao );
 		// scene.add(chao);
 		//cria camera com (FOV, aspect radio, near, far)
-		var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+		var camera = new THREE.PerspectiveCamera(70, (window.innerWidth ) / window.innerHeight, 0.1, 1000);
 
 
 		//var ambientLight = new THREE.AmbientLight( 0xcccccc, 0.6 );
 		//scene.add( ambientLight );
 
 
+		// Setando iluminação
 		var light = new THREE.PointLight(0xffffff);
 		light.position.set(-100, 200, 100);
 		scene.add(light);
+
+		// Setando Sol
+		var sun_geo = new THREE.SphereGeometry( 60, 24, 16 );
+		var sun_material = new THREE.MeshNormalMaterial();
+		var sun =  new THREE.Mesh(sun_geo, sun_material);
+		//sun.position.set(-10,20,10);
+		scene.add(sun);
 
 		scene.background = new THREE.Color("blue");
 		var manager = new THREE.LoadingManager();
@@ -98,7 +107,7 @@
 		// renderer é o que faz o objeto aparecer na tela
 		var renderer = new THREE.WebGLRenderer();
 		// aqui é definido que o renderer tem tamanho da janela do browser
-		renderer.setSize(window.innerWidth, window.innerHeight);
+		renderer.setSize(0.999*window.innerWidth, 0.997*window.innerHeight);
 
 		renderer.setPixelRatio(window.devicePixelRatio);
 
