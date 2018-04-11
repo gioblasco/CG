@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>Objeto</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="../three/three.js"></script>
+    <script src="../three/OBJLoader.js"></script>
+	<script src="../three/OrbitControls.js"></script>
+
+		<script>
+      //cria cena
+	  var obj_carregado =  new THREE.Mesh();
+      var scene = new THREE.Scene();
+
+	//  var plano_do_chao = THREE.PlaneGeometry(10,10,1 ) // vetor normal como parametro
+	  //var malha_do_chao = new THREE.MeshStandardMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
+	 // var chao = new THREE.Mesh( plano_do_chao, malha_do_chao );
+	 // scene.add(chao);
+      //cria camera com (FOV, aspect radio, near, far)
+      var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+
+		//var ambientLight = new THREE.AmbientLight( 0xcccccc, 0.6 );
+		//scene.add( ambientLight );
+
+
+		    var light = new THREE.PointLight(0xffffff);
+    light.position.set(-100,200,100);
+    scene.add(light);
+
+		scene.background =new THREE.Color("blue");
+			var manager = new THREE.LoadingManager();
+				manager.onProgress = function ( item, loaded, total ) {
+					console.log( item, loaded, total );
+			};
+
+			var onProgress = function ( xhr ) {
+				if ( xhr.lengthComputable ) {
+					var percentComplete = xhr.loaded / xhr.total * 100;
+					console.log( Math.round(percentComplete, 2) + '% downloaded' );
+				}
+			};
+			var onError = function ( xhr ) {
+			console.log( 'An error happened: ' +xhr );
+
+			};
+
+
+			var loader = new THREE.OBJLoader(manager);
+			loader.load(
+			'mojo.obj', function ( object ) {
+
+				obj_carregado = object;
+				object.position.y = 0;
+				object.position.x = 0;
+				object.position.z = 0;
+				object.material = new THREE.MeshNormalMaterial(  );
+				scene.add( object );
+			}, onProgress, onError );
+
+			
+			camera.position.z = 5;
+			camera.position.y = 1;
+			camera.position.x = 0;
+
+			// Tamanho do objeto que imita um plano (chao)
+			var geometry = new THREE.PlaneGeometry(10, 20, 0);
+			// Criando textura para por no chão
+			var texture = new THREE.TextureLoader().load( 'grama.jpg' );
+			// Linkando a textura ao objeto
+			var material = new THREE.MeshBasicMaterial( {map:texture, side: THREE.DoubleSide} );
+			var plane = new THREE.Mesh( geometry, material );
+
+			// Deixando o chao que tava dipeh deitadinho
+			plane.rotation.x = 90;
+			scene.add( plane );
+
+//   scene.add( ground );
+
+      // renderer é o que faz o objeto aparecer na tela
+      var renderer = new THREE.WebGLRenderer();
+      // aqui é definido que o renderer tem tamanho da janela do browser
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+			renderer.setPixelRatio( window.devicePixelRatio );
+
+      // elemento <canvas>
+      document.body.appendChild( renderer.domElement );
+
+
+
+			var animate = function () {
+				requestAnimationFrame( animate );
+
+
+				obj_carregado.rotation.y += 0.05
+
+				renderer.render(scene, camera);
+			};
+
+			animate();
+
+		</script>
+	</body>
+</html>
