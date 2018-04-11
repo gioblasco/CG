@@ -27,7 +27,6 @@
 		//cria camera com (FOV, aspect radio, near, far)
 		var camera = new THREE.PerspectiveCamera(70, (window.innerWidth ) / window.innerHeight, 0.1, 1000);
 
-
 		// Setando iluminação
 		var light = new THREE.PointLight(0xffffcc);
 		light.position.set(0, 5, -2);
@@ -64,7 +63,6 @@
 				object.position.y = 0;
 				object.position.x = 0;
 				object.position.z = 0;
-				object.material = new THREE.MeshNormalMaterial({flatShading:true});
 				scene.add(object);
 			}, onProgress, onError);
 
