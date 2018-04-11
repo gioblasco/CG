@@ -37,18 +37,18 @@
 
 
 		// Setando iluminação
-		var light = new THREE.PointLight(0xffffff);
-		light.position.set(-100, 200, 100);
+		var light = new THREE.PointLight(0xffffcc);
+		light.position.set(0, 5, -2);
 		scene.add(light);
 
-		// Setando Sol
-		var sun_geo = new THREE.SphereGeometry( 60, 24, 16 );
-		var sun_material = new THREE.MeshNormalMaterial();
-		var sun =  new THREE.Mesh(sun_geo, sun_material);
-		//sun.position.set(-10,20,10);
-		scene.add(sun);
 
-		scene.background = new THREE.Color("blue");
+		var sun_geometry = new THREE.SphereGeometry(0.5);
+		var sun_material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+		var sun = new THREE.Mesh( sun_geometry, sun_material );
+		sun.position.set(0,5,-2);
+		scene.add( sun );
+
+		scene.background = new THREE.Color("lightblue");
 		var manager = new THREE.LoadingManager();
 		manager.onProgress = function(item, loaded, total) {
 			console.log(item, loaded, total);
