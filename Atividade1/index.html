@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset=utf-8>
-		<title>Objeto</title>
-		<style>
-			body { margin: 0; }
-		</style>
-	</head>
-	<body>
-		<script src="../three/three.js"></script>
-    <script src="../three/OBJLoader.js"></script>
-		<script src="../three/OrbitControls.js"></script>
 
- 
+<head>
+	<meta charset=utf-8>
+	<title>Objeto</title>
+	<link rel="shortcut icon" type="image/png" href="icone.png"/>
+	<style>
+		body {
+			margin: 0;
+		}
+
+
+	</style>
+</head>
+
+<body>
+	<script src="../three/three.js"></script>
+	<script src="../three/OBJLoader.js"></script>
+	<script src="../three/OrbitControls.js"></script>
+
 	<script>
 		//cria cena
 		var obj_carregado = new THREE.Mesh();
@@ -31,22 +37,23 @@
 
 
 		// Setando iluminação
-		var light = new THREE.PointLight(0xffffff);
-		light.position.set(-100, 200, 100);
+		var light = new THREE.PointLight(0xffffcc);
+		light.position.set(0, 5, -2);
 		scene.add(light);
 
-		// Setando Sol
-		var sun_geo = new THREE.SphereGeometry( 60, 24, 16 );
-		var sun_material = new THREE.MeshNormalMaterial();
-		var sun =  new THREE.Mesh(sun_geo, sun_material);
-		//sun.position.set(-10,20,10);
-		scene.add(sun);
 
-		scene.background =new THREE.Color("blue");
-			var manager = new THREE.LoadingManager();
-				manager.onProgress = function ( item, loaded, total ) {
-					console.log( item, loaded, total );
-			};
+
+		var sun_geometry = new THREE.SphereGeometry(0.5);
+		var sun_material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+		var sun = new THREE.Mesh( sun_geometry, sun_material );
+		sun.position.set(0,5,-2);
+		scene.add( sun );
+
+		scene.background = new THREE.Color("lightblue");
+		var manager = new THREE.LoadingManager();
+		manager.onProgress = function(item, loaded, total) {
+			console.log(item, loaded, total);
+		};
 
 		var onProgress = function(xhr) {
 			if (xhr.lengthComputable) {
@@ -79,7 +86,7 @@
 		camera.position.x = 0;
 
 		// Tamanho do objeto que imita um plano (chao)
-		var geometry = new THREE.PlaneGeometry(10, 20, 0);
+		var geometry = new THREE.PlaneGeometry(10, 10, 0);
 		// Criando textura para por no chão
 		var texture = new THREE.TextureLoader().load('grama.jpg');
 		// Linkando a textura ao objeto
@@ -98,7 +105,8 @@
 		// renderer é o que faz o objeto aparecer na tela
 		var renderer = new THREE.WebGLRenderer();
 		// aqui é definido que o renderer tem tamanho da janela do browser
-		renderer.setSize(0.999*window.innerWidth, 0.997*window.innerHeight);
+		renderer.setSize(0.99*window.innerWidth, 0.99*window.innerHeight);
+		//renderer.setSize(window.innerWidth, window.innerHeight);
 
 		renderer.setPixelRatio(window.devicePixelRatio);
 
