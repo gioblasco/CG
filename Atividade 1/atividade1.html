@@ -11,28 +11,28 @@
 	<body>
 		<script src="../three/three.js"></script>
     <script src="../three/OBJLoader.js"></script>
-	
+
 		<script>
       //cria cena
 	  var obj_carregado;
       var scene = new THREE.Scene();
-	  
+
 	//  var plano_do_chao = THREE.PlaneGeometry(10,10,1 ) // vetor normal como parametro
 	  //var malha_do_chao = new THREE.MeshStandardMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
 	 // var chao = new THREE.Mesh( plano_do_chao, malha_do_chao );
 	 // scene.add(chao);
       //cria camera com (FOV, aspect radio, near, far)
-      var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-	  
+
 		//var ambientLight = new THREE.AmbientLight( 0xcccccc, 0.6 );
 		//scene.add( ambientLight );
-		
-		
-		    var light = new THREE.PointLight(0xffffff);
+
+
+		var light = new THREE.PointLight(0xffffff);
     light.position.set(-100,200,100);
     scene.add(light);
-		
+
 		scene.background =new THREE.Color("blue");
 			var manager = new THREE.LoadingManager();
 				manager.onProgress = function ( item, loaded, total ) {
@@ -47,14 +47,14 @@
 			};
 			var onError = function ( xhr ) {
 			console.log( 'An error happened: ' +xhr );
-			
+
 			};
-			
-			
+
+
 			var loader = new THREE.OBJLoader(manager);
-			loader.load( 
+			loader.load(
 			'mojo.obj', function ( object ) {
-				
+
 				obj_carregado = object;
 				object.position.y = 0;
 				object.position.x = 0;
@@ -63,34 +63,22 @@
 				scene.add( object );
 			}, onProgress, onError );
 
-			
-			var geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 );
-			var material = new THREE.MeshNormalMaterial(  );
-			var cube = new THREE.Mesh( geometry, material );
-			scene.add( cube );
-
-			
-			
 			camera.position.z = 5;
-			camera.position.y = 2;
-			camera.position.x = 2;
-			
-			cube.position.x = 2;
-			cube.position.y = 2;
-			cube.position.z = 2;
+			camera.position.y = 1;
+			camera.position.x = 0;
 
 			// Tamanho do objeto que imita um plano (chao)
-			var geometry = new THREE.PlaneGeometry( 10, 10, 0 );
+			var geometry = new THREE.PlaneGeometry(10, 20, 0);
 			// Criando textura para por no chão
 			var texture = new THREE.TextureLoader().load( 'grama.jpg' );
 			// Linkando a textura ao objeto
 			var material = new THREE.MeshBasicMaterial( {map:texture, side: THREE.DoubleSide} );
 			var plane = new THREE.Mesh( geometry, material );
-			
+
 			// Deixando o chao que tava dipeh deitadinho
 			plane.rotation.x = 90;
 			scene.add( plane );
-   
+
 //   scene.add( ground );
 
       // renderer é o que faz o objeto aparecer na tela
@@ -105,12 +93,10 @@
 
 			renderer.render( scene, camera );
 
-			
+
 			var animate = function () {
 				requestAnimationFrame( animate );
 
-				cube.rotation.x += 0.05;
-				cube.rotation.y += 0.05;
 				obj_carregado.rotation.y += 0.05
 
 				renderer.render(scene, camera);
@@ -121,4 +107,3 @@
 		</script>
 	</body>
 </html>
-
