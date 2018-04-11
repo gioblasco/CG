@@ -11,6 +11,7 @@
 	<body>
 		<script src="../three/three.js"></script>
     <script src="../three/OBJLoader.js"></script>
+	<script src="../three/OrbitControls.js"></script>
 	
 		<script>
       //cria cena
@@ -64,10 +65,7 @@
 			}, onProgress, onError );
 
 			
-			var geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 );
-			var material = new THREE.MeshNormalMaterial(  );
-			var cube = new THREE.Mesh( geometry, material );
-			scene.add( cube );
+			
 
 			
 			
@@ -75,9 +73,7 @@
 			camera.position.y = 2;
 			camera.position.x = 2;
 			
-			cube.position.x = 2;
-			cube.position.y = 2;
-			cube.position.z = 2;
+			
 
 			// Tamanho do objeto que imita um plano (chao)
 			var geometry = new THREE.PlaneGeometry( 10, 10, 0 );
@@ -103,16 +99,14 @@
       // elemento <canvas>
       document.body.appendChild( renderer.domElement );
 
-			renderer.render( scene, camera );
-
+			
 			
 			var animate = function () {
 				requestAnimationFrame( animate );
 
-				cube.rotation.x += 0.05;
-				cube.rotation.y += 0.05;
+				
 				obj_carregado.rotation.y += 0.05
-
+				
 				renderer.render(scene, camera);
 			};
 
