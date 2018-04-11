@@ -10,10 +10,7 @@
 			margin: 0;
 		}
 
-		canvas {
-			width: 100%;
-			height: 100%
-		}
+	
 	</style>
 </head>
 
@@ -107,7 +104,8 @@
 		// renderer é o que faz o objeto aparecer na tela
 		var renderer = new THREE.WebGLRenderer();
 		// aqui é definido que o renderer tem tamanho da janela do browser
-		renderer.setSize(0.999*window.innerWidth, 0.997*window.innerHeight);
+		renderer.setSize(0.99*window.innerWidth, 0.99*window.innerHeight);
+		//renderer.setSize(window.innerWidth, window.innerHeight);
 
 		renderer.setPixelRatio(window.devicePixelRatio);
 
