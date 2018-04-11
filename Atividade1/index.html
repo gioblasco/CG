@@ -28,7 +28,7 @@
 		var camera = new THREE.PerspectiveCamera(100, (window.innerWidth ) / window.innerHeight, 0.1, 3000);
 
 		// Setando iluminação
-		var light = new THREE.PointLight(0xffffcc);
+		var light = new THREE.PointLight(0xffffcc, 1.5);
 		light.position.set(0, 7, -5);
 		scene.add(light);
 
@@ -100,7 +100,7 @@
 
 		var controls = new THREE.OrbitControls( camera );
 		controls.autoRotate = true;
-		controls.autoRotateSpeed = 1;
+		controls.autoRotateSpeed = 2;
 		
 		controls.update();
 		
