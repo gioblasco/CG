@@ -9,23 +9,88 @@
 		</style>
 	</head>
 	<body>
-		<script src="../three.js/three.js"></script>
-    <script src="../three.js/OBJLoader.js"></script>
+		<script src="../three/three.js"></script>
+    <script src="../three/OBJLoader.js"></script>
 		<script>
       //cria cena
       var scene = new THREE.Scene();
       //cria camera com (FOV, aspect radio, near, far)
       var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+	  
+		var ambientLight = new THREE.AmbientLight( 0xcccccc, 0.4 );
+		scene.add( ambientLight );
+
+			var manager = new THREE.LoadingManager();
+				manager.onProgress = function ( item, loaded, total ) {
+					console.log( item, loaded, total );
+			};
+
+			var onProgress = function ( xhr ) {
+				if ( xhr.lengthComputable ) {
+					var percentComplete = xhr.loaded / xhr.total * 100;
+					console.log( Math.round(percentComplete, 2) + '% downloaded' );
+				}
+			};
+			var onError = function ( xhr ) {
+			console.log( 'An error happened: ' +xhr );
+			
+			};
+			
+			
+			var loader = new THREE.OBJLoader(manager);
+			loader.load( 
+			'mojo.obj', function ( object ) {
+				
+				obj_carregado = object;
+				object.position.y = 0;
+				object.position.x = 0;
+				object.position.z = 0;
+				scene.add( object );
+			}, onProgress, onError );
+
+			
+			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+			var material = new THREE.MeshNormalMaterial(  );
+			var cube = new THREE.Mesh( geometry, material );
+			scene.add( cube );
+
+			
+			
+			camera.position.z = 10;
+			camera.position.y = 2;
+			
+			cube.position.x = 2;
+			cube.position.y = 2;
+			cube.position.z = 2;
+
+
       // renderer é o que faz o objeto aparecer na tela
       var renderer = new THREE.WebGLRenderer();
       // aqui é definido que o renderer tem tamanho da janela do browser
       renderer.setSize(window.innerWidth, window.innerHeight);
+
+			renderer.setPixelRatio( window.devicePixelRatio );
+
       // elemento <canvas>
       document.body.appendChild( renderer.domElement );
 
-      // inicializa o "carregador" de .obj
-      var loader = new THREE.OBJLoader();
+			renderer.render( scene, camera );
+
+			
+			var animate = function () {
+				requestAnimationFrame( animate );
+
+				cube.rotation.x += 0.05;
+				cube.rotation.y += 0.05;
+				obj_carregado.rotation.y += 0.05
+
+				renderer.render(scene, camera);
+			};
+
+			animate();
 
 		</script>
 	</body>
 </html>
+
