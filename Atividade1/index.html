@@ -22,6 +22,7 @@
 	<script>
 		//cria cena
 		var obj_carregado = new THREE.Mesh();
+		var base_carregada = new THREE.Mesh();
 		var scene = new THREE.Scene();
 
 		//cria camera com (FOV, aspect radio, near, far)
@@ -29,13 +30,13 @@
 
 		// Setando iluminação
 		var light = new THREE.PointLight(0xffffcc, 1.5);
-		light.position.set(0, 7, -5);
+		light.position.set(0, 7, 0);
 		scene.add(light);
 
 		var sun_geometry = new THREE.SphereGeometry(1);
 		var sun_material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
 		var sun = new THREE.Mesh( sun_geometry, sun_material );
-		sun.position.set(0,7, -5);
+		sun.position.set(0,7, 0);
 		scene.add( sun );
 
 		scene.background = new THREE.Color("black");
@@ -66,14 +67,25 @@
 				object.scale.set(2,2,2);
 				scene.add(object);
 			}, onProgress, onError);
-
+			
+		var loader = new THREE.OBJLoader(manager);
+		loader.load(
+			'hexagon.obj',
+			function(object) {
+				obj_carregado = object;
+				object.position.x = 0;
+				object.position.y = -0.5;
+				object.position.z = 0;
+				object.scale.set(2,2,2);
+				scene.add(object);
+			}, onProgress, onError);
 
 		camera.position.z = 10;
 		camera.position.y = 10;
 		camera.position.x = 5;
 
 		// Tamanho do objeto que imita um plano (chao)
-		var geometry = new THREE.PlaneGeometry(15, 15, 0);
+/*		var geometry = new THREE.PlaneGeometry(15, 15, 0);
 		// Criando textura para por no chão
 		var texture = new THREE.TextureLoader().load('grama.jpg');
 		// Linkando a textura ao objeto
@@ -86,7 +98,7 @@
 		// Deixando o chao que tava dipeh deitadinho
 		plane.rotation.x=-Math.PI/2;
 		scene.add(plane);
-
+*/
 		// renderer é o que faz o objeto aparecer na tela
 		var renderer = new THREE.WebGLRenderer();
 		// aqui é definido que o renderer tem tamanho da janela do browser
