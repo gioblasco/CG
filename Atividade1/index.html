@@ -28,35 +28,34 @@
 		//cria camera com (FOV, aspect radio, near, far)
 		var camera = new THREE.PerspectiveCamera(100, (window.innerWidth ) / window.innerHeight, 0.1, 3000);
 
+		//Setando posição da câmera
+		camera.position.z = 10;
+		camera.position.y = 5;
+		camera.position.x = 5;
+
 		// Setando iluminação
-		var light = new THREE.PointLight(0xffffcc, 1.5);
+		var light = new THREE.DirectionalLight(0xffffcc, 1.0);
 		light.position.set(0, 7, 0);
 		scene.add(light);
 
+		//Setando iluminação estática
+		var static_light = new THREE.DirectionalLight(0xffffcc, 0.4);
+		light.position.set(0, 7, 0);
+		scene.add(static_light);
+
+		//Setando formato do sol
 		var sun_geometry = new THREE.SphereGeometry(1);
 		var sun_material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
 		var sun = new THREE.Mesh( sun_geometry, sun_material );
 		sun.position.set(0,7, 0);
 		scene.add( sun );
 
-		scene.background = new THREE.Color("black");
-		var manager = new THREE.LoadingManager();
-		manager.onProgress = function(item, loaded, total) {
-			console.log(item, loaded, total);
-		};
+		//Setando background
+		scene.background = new THREE.Color("blue");
 
-		var onProgress = function(xhr) {
-			if (xhr.lengthComputable) {
-				var percentComplete = xhr.loaded / xhr.total * 100;
-				console.log(Math.round(percentComplete, 2) + '% downloaded');
-			}
-		};
-		var onError = function(xhr) {
-			console.log('An error happened: ' + xhr);
 
-		};
-
-		var loader = new THREE.OBJLoader(manager);
+		//Carregando os .obj
+		var loader = new THREE.OBJLoader();
 		loader.load(
 			'mojo.obj',
 			function(object) {
@@ -66,9 +65,9 @@
 				object.position.z = 0;
 				object.scale.set(2,2,2);
 				scene.add(object);
-			}, onProgress, onError);
-			
-		var loader = new THREE.OBJLoader(manager);
+			});
+
+		var loader = new THREE.OBJLoader();
 		loader.load(
 			'hexagon.obj',
 			function(object) {
@@ -78,44 +77,24 @@
 				object.position.z = 0;
 				object.scale.set(2,2,2);
 				scene.add(object);
-			}, onProgress, onError);
+			});
 
-		camera.position.z = 10;
-		camera.position.y = 10;
-		camera.position.x = 5;
-
-		// Tamanho do objeto que imita um plano (chao)
-/*		var geometry = new THREE.PlaneGeometry(15, 15, 0);
-		// Criando textura para por no chão
-		var texture = new THREE.TextureLoader().load('grama.jpg');
-		// Linkando a textura ao objeto
-		var material = new THREE.MeshBasicMaterial({
-			map: texture,
-			side: THREE.DoubleSide
-		});
-		var plane = new THREE.Mesh(geometry, material);
-
-		// Deixando o chao que tava dipeh deitadinho
-		plane.rotation.x=-Math.PI/2;
-		scene.add(plane);
-*/
 		// renderer é o que faz o objeto aparecer na tela
 		var renderer = new THREE.WebGLRenderer();
 		// aqui é definido que o renderer tem tamanho da janela do browser
 		renderer.setSize(0.99*window.innerWidth, 0.99*window.innerHeight);
-		
-
 		renderer.setPixelRatio(window.devicePixelRatio);
 
 		// elemento <canvas>
 		document.body.appendChild(renderer.domElement);
 
+		// Setando rotação da câmera
 		var controls = new THREE.OrbitControls( camera );
 		controls.autoRotate = true;
-		controls.autoRotateSpeed = 2;
-		
+		controls.autoRotateSpeed = 4;
 		controls.update();
-		
+
+		// Setando rotação do sol
 		var animate = function() {
 			timestamp = Date.now() * 0.0001;
 			sun.position.x = Math.cos(timestamp * 15) * 15;
@@ -123,14 +102,11 @@
 			light.position.x = sun.position.x;
 			light.position.y = sun.position.y;
 			requestAnimationFrame(animate);
-
-//			obj_carregado.rotation.y += -0.05;
 			renderer.render(scene, camera);
-			//console.log(camera.position);
 			controls.update();
 		};
-
 		animate();
+
 	</script>
 </body>
 
