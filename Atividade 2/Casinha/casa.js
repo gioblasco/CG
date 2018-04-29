@@ -4,7 +4,7 @@ var gl;
 
 var numVertices  = 66;
 
-var axis = 0;
+var axis = 1;
 var xAxis = 0;
 var yAxis =1;
 var zAxis = 2;
