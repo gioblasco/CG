@@ -4,7 +4,9 @@ var l1 = 0.6;
 var l2 = 1;
 var z1 = 2.3;
 var z2 = 1.7;
-var offset_x = 0;
+
+
+var offset_x = -2;
 var offset_y = 0;
 var offset_z  = 0;
 
@@ -40,7 +42,7 @@ var vertices_diamante = new Float32Array([ /* x,y,z */
 
 offset_x = 2;
 offset_y = 0;
-offset_z  = 2;
+offset_z  = 0;
 
 var vertices_diamante_2 = new Float32Array([ /* x,y,z */ 
     
