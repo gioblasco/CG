@@ -397,6 +397,7 @@
     var rDiamond = 0;
     var rHouse = 0;
 
+    // camera 1
     function drawScene1() {
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -445,6 +446,7 @@
 
     }
 
+    // camera 2
     function drawScene2() {
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -531,8 +533,10 @@
         gl.enable(gl.DEPTH_TEST);
 
         if(camera == 0)
+          // desenha a cena de 1 jeito
           tick1();
         else {
+          // desenha a cena de outro jeito
           tick2();
         }
     }
@@ -557,9 +561,11 @@
 document.onkeydown = checkKey;
 
 function checkKey(e) {
+    // seta esquerda
     if (e.keyCode == '37') {
        webGLStart(1);
     }
+    // seta direita
     else if (e.keyCode == '39') {
        webGLStart(0);
     }
