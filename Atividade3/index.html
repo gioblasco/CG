@@ -25,17 +25,14 @@
 
 		//cria camera com (FOV, aspect radio, near, far)
 		var camera1 = new THREE.PerspectiveCamera(100, (window.innerWidth ) / window.innerHeight, 0.1, 3000);
-		var camera2 = new THREE.PerspectiveCamera(50, (window.innerWidth ) / window.innerHeight, 0.1, 1000);
+		var camera2 = new THREE.PerspectiveCamera(100, (window.innerWidth ) / window.innerHeight, 1, 1000);
 
 		//Setando posição da câmera 1
-		camera1.position.z = 40;
-		camera1.position.y = 5;
-		camera1.position.x = 0;
+		camera1.position.set(0,5,40);
 
 		//Setando posição da câmera 2
-		camera2.position.z = 10;
-		camera2.position.y = 30;
-		camera2.position.x = 0;
+		camera2.position.set(0,40,5);
+		camera2.lookAt(new THREE.Vector3(0,0,-1));
 
 		// Setando iluminação do sol
 		var light = new THREE.PointLight(0xffffcc, 3.0);
@@ -89,14 +86,6 @@
 		// elemento <canvas>
 		document.body.appendChild(renderer.domElement);
 
-		// Setando rotação da câmera
-		var controls = new THREE.OrbitControls( camera1 );
-		//controls.autoRotate = true;
-		controls.autoRotateSpeed = 4;
-		controls.update();
-
-		var a = new THREE.Vector3( 15/15.0332, 1/15.0332, 0 );
-
 		// Setando rotação do sol
 		var animate = function() {
 			timestamp = Date.now() * 0.000009;
@@ -111,7 +100,6 @@
 			mercuryMesh.rotation.y += 0.02;
 			requestAnimationFrame(animate);
 			renderer.render(scene, camera1);
-			controls.update();
 		};
 		animate();
 
