@@ -51,12 +51,7 @@
 		static_light.position.set(0, 7, 0);
 		scene.add(static_light);
 
-		//Setando formato do sol
-		var sun_geometry = new THREE.SphereGeometry(6, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
-		var sun_material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-		var sun = new THREE.Mesh(sun_geometry, sun_material);
-		sun.position.set(0,0, 0);
-		scene.add( sun );
+		
 
 		//Setando background
 		scene.background = new THREE.Color("darkblue");
@@ -65,6 +60,13 @@
  		var texture_mars = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_mars.jpg')});
 		var texture_earth = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_earth_daymap.jpg')});
 		var texture_mercury = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_mercury.jpg')});
+		var texture_sun = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_sun.jpg')});
+
+		//Setando formato do sol
+		var sun_geometry = new THREE.SphereGeometry(6, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
+		var sun = new THREE.Mesh(sun_geometry, texture_sun);
+		sun.position.set(0,0, 0);
+		scene.add( sun );
 
 		var earth_geometry   = new THREE.SphereGeometry(5, 32, 32);
 		var earthMesh = new THREE.Mesh(earth_geometry, texture_earth);
