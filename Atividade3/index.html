@@ -50,7 +50,9 @@
 		var static_light = new THREE.DirectionalLight(0xffffcc, 0.4);
 		static_light.position.set(0, 7, 0);
 		scene.add(static_light);
-
+		var static_light2 = new THREE.DirectionalLight(0xffffcc, 0.4);
+		static_light2.position.set(0, -7, 0);
+		scene.add(static_light2);
 		//Setando formato do sol
 		var sun_geometry = new THREE.SphereGeometry(6, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
 		var sun_material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
