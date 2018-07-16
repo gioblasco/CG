@@ -66,56 +66,19 @@
 		var texture_earth = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_earth_daymap.jpg')});
 		var texture_mercury = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_mercury.jpg')});
 
-		//Carregando os .obj
-		var loader = new THREE.OBJLoader();
-		loader.load(
-			'Planet.obj',
-			function(object) {
-				planeta1 = object;
-				object.position.x = -15;
-				object.position.y = 0;
-				object.position.z = 0;
-				object.scale.set(0.5, 0.5, 0.5);
+		var earth_geometry   = new THREE.SphereGeometry(3, 32, 32);
+  		var earthMesh = new THREE.Mesh(earth_geometry, texture_earth);
+  		scene.add(earthMesh);
 
-				object.traverse( function(node){
-					if ( node.isMesh )
-						node.material = texture_mercury;
-				}) ;
-				scene.add(object);
-			});
+  		var mars_geometry   = new THREE.SphereGeometry(4, 32, 32);
+  		mars_geometry.translate(10,0,0);
+  		var marsMesh = new THREE.Mesh(mars_geometry, texture_mars);
+  		scene.add(marsMesh);
 
-			loader.load(
-				'Planet.obj',
-				function(object) {
-					planeta2 = object;
-					object.position.x = 0;
-					object.position.y = 0;
-					object.position.z = 0;
-					//mantém a msm escala
-					//object.scale.set(1, 1, 1);
-
-					object.traverse( function(node){
-						if ( node.isMesh )
-							node.material = texture_earth;
-					}) ;
-					scene.add(object);
-				});
-
-				loader.load(
-					'Planet.obj',
-					function(object) {
-						planeta3 = object;
-						object.position.x = 15;
-						object.position.y = 0;
-						object.position.z = 0;
-						object.scale.set(0.7, 0.7, 0.7);
-
-						object.traverse( function(node){
-							if ( node.isMesh )
-								node.material = texture_mars;
-						}) ;
-						scene.add(object);
-					});
+  		var mercury_geometry   = new THREE.SphereGeometry(2, 32, 32);
+  		mercury_geometry.translate(-10,0,0);
+  		var mercuryMesh = new THREE.Mesh(mercury_geometry, texture_mercury);
+  		scene.add(mercuryMesh);
 
 		// renderer é o que faz o objeto aparecer na tela
 		var renderer = new THREE.WebGLRenderer();
