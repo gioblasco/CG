@@ -29,7 +29,7 @@
 
 		//cria camera com (FOV, aspect radio, near, far)
 		var camera1 = new THREE.PerspectiveCamera(100, (window.innerWidth ) / window.innerHeight, 0.1, 3000);
-		var camera2 = new THREE.PerspectiveCamera(100, (window.innerWidth ) / window.innerHeight, 0.1, 1000);
+		var camera2 = new THREE.PerspectiveCamera(50, (window.innerWidth ) / window.innerHeight, 0.1, 1000);
 
 		//Setando posição da câmera 1
 		camera1.position.z = 30;
@@ -38,8 +38,8 @@
 
 		//Setando posição da câmera 2
 		camera2.position.z = 10;
-		camera2.position.y = 5;
-		camera2.position.x = 5;
+		camera2.position.y = 30;
+		camera2.position.x = 0;
 
 		// Setando iluminação do sol
 		var light = new THREE.PointLight(0xffffcc, 1.0);
@@ -59,12 +59,12 @@
 		scene.add( sun );
 
 		//Setando background
-		scene.background = new THREE.Color("blue");
+		scene.background = new THREE.Color("darkblue");
 
 		var textureLoader = new THREE.TextureLoader();
- 		var texture_mars = new THREE.MeshPhongMaterial({map: textureLoader.load('8k_mars.jpg')});
-		var texture_earth = new THREE.MeshPhongMaterial({map: textureLoader.load('8k_earth_daymap.jpg')});
-		var texture_mercury = new THREE.MeshPhongMaterial({map: textureLoader.load('8k_mercury.jpg')});
+ 		var texture_mars = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_mars.jpg')});
+		var texture_earth = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_earth_daymap.jpg')});
+		var texture_mercury = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_mercury.jpg')});
 
 		//Carregando os .obj
 		var loader = new THREE.OBJLoader();
@@ -72,10 +72,10 @@
 			'Planet.obj',
 			function(object) {
 				planeta1 = object;
-				object.position.x = -10;
+				object.position.x = -15;
 				object.position.y = 0;
 				object.position.z = 0;
-				object.scale.set(0.5,0.5,0.5);
+				object.scale.set(0.5, 0.5, 0.5);
 
 				object.traverse( function(node){
 					if ( node.isMesh )
@@ -91,7 +91,8 @@
 					object.position.x = 0;
 					object.position.y = 0;
 					object.position.z = 0;
-					object.scale.set(0.5,0.5,0.5);
+					//mantém a msm escala
+					//object.scale.set(1, 1, 1);
 
 					object.traverse( function(node){
 						if ( node.isMesh )
@@ -104,10 +105,10 @@
 					'Planet.obj',
 					function(object) {
 						planeta3 = object;
-						object.position.x = 10;
+						object.position.x = 15;
 						object.position.y = 0;
 						object.position.z = 0;
-						object.scale.set(0.5,0.5,0.5);
+						object.scale.set(0.7, 0.7, 0.7);
 
 						object.traverse( function(node){
 							if ( node.isMesh )
@@ -115,8 +116,6 @@
 						}) ;
 						scene.add(object);
 					});
-
-
 
 		// renderer é o que faz o objeto aparecer na tela
 		var renderer = new THREE.WebGLRenderer();
@@ -135,9 +134,9 @@
 
 		// Setando rotação do sol
 		var animate = function() {
-			timestamp = Date.now() * 0.0001;
-			sun.position.x = Math.cos(timestamp * 20) * 20;
-    	sun.position.z = Math.sin(timestamp * 20) * 20;
+			timestamp = Date.now() * 0.00003;
+			sun.position.x = Math.cos(timestamp * 25) * 25;
+    	sun.position.z = Math.sin(timestamp * 25) * 25;
 			light.position.x = sun.position.x;
 			light.position.z = sun.position.z;
 			planeta1.rotation.y += 0.001;
