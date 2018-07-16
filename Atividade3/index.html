@@ -21,10 +21,6 @@
 	<h2 align="center"> Modelo "Geocentrista" </h2>
 
 	<script>
-		var planeta1 = new THREE.Mesh();
-		var planeta2 = new THREE.Mesh();
-		var planeta3 = new THREE.Mesh();
-		var base_carregada = new THREE.Mesh();
 		var scene = new THREE.Scene();
 
 		//cria camera com (FOV, aspect radio, near, far)
@@ -99,16 +95,18 @@
 		controls.autoRotateSpeed = 4;
 		controls.update();
 
+		var a = new THREE.Vector3( 15/15.0332, 1/15.0332, 0 );
+	
 		// Setando rotação do sol
 		var animate = function() {
 			timestamp = Date.now() * 0.00003;
 			sun.position.x = Math.cos(timestamp * 25) * 25;
-    	sun.position.z = Math.sin(timestamp * 25) * 25;
+    		sun.position.z = Math.sin(timestamp * 25) * 25;
 			light.position.x = sun.position.x;
 			light.position.z = sun.position.z;
-			planeta1.rotation.y += 0.001;
-			planeta2.rotation.y += 0.002;
-			planeta3.rotation.y += 0.003;
+			earth_geometry.rotateY(0.01);
+			mars_geometry.rotateY(0.01);
+			mercury_geometry.rotateY(0.01);
 			requestAnimationFrame(animate);
 			renderer.render(scene, camera1);
 			controls.update();
