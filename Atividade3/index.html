@@ -129,17 +129,20 @@
 
 		// Setando rotação da câmera
 		var controls = new THREE.OrbitControls( camera1 );
-		controls.autoRotate = true;
+		//controls.autoRotate = true;
 		controls.autoRotateSpeed = 4;
 		controls.update();
 
 		// Setando rotação do sol
 		var animate = function() {
-			timestamp = Date.now() * 0.000001;
+			timestamp = Date.now() * 0.0001;
 			sun.position.x = Math.cos(timestamp * 20) * 20;
     	sun.position.z = Math.sin(timestamp * 20) * 20;
 			light.position.x = sun.position.x;
 			light.position.z = sun.position.z;
+			planeta1.rotation.y += 0.001;
+			planeta2.rotation.y += 0.002;
+			planeta3.rotation.y += 0.003;
 			requestAnimationFrame(animate);
 			renderer.render(scene, camera1);
 			controls.update();
