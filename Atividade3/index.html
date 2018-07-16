@@ -70,12 +70,12 @@
 		var earthMesh = new THREE.Mesh(earth_geometry, texture_earth);
 		scene.add(earthMesh);
 
-		var mars_geometry   = new THREE.SphereGeometry(3, 32, 32);
+		var mars_geometry   = new THREE.SphereGeometry(2.65, 32, 32);
 		mars_geometry.translate(15,0,0);
 		var marsMesh = new THREE.Mesh(mars_geometry, texture_mars);
 		scene.add(marsMesh);
 
-		var mercury_geometry   = new THREE.SphereGeometry(2, 32, 32);
+		var mercury_geometry   = new THREE.SphereGeometry(1.9, 32, 32);
 		mercury_geometry.translate(-15,0,0);
 		var mercuryMesh = new THREE.Mesh(mercury_geometry, texture_mercury);
 		scene.add(mercuryMesh);
