@@ -21,8 +21,6 @@
 	<h2 align="center"> Modelo "Geocentrista" </h2>
 
 	<script>
-		//cria cena
-		var obj_carregado = new THREE.Mesh();
 		var base_carregada = new THREE.Mesh();
 		var scene = new THREE.Scene();
 
@@ -60,13 +58,36 @@
 		//Setando background
 		scene.background = new THREE.Color("blue");
 
+		var texture_loader = new THREE.TextureLoader();
+		var texture_mars;
+
+		// load a resource
+		texture_loader.load(
+		    // resource URL
+		    '8k_mars.jpg',
+		    // Function when resource is loaded
+		    function ( texture ) {
+		        // do something with the texture
+		        texture_mars = new THREE.MeshBasicMaterial( {
+		            map: texture
+		         } );
+		    },
+		    // Function called when download progresses
+		    function ( xhr ) {
+		        console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+		    },
+		    // Function called when download errors
+		    function ( xhr ) {
+		        console.log( 'An error happened' );
+		    }
+		);
 
 		//Carregando os .obj
 		var loader = new THREE.OBJLoader();
 		loader.load(
-			'Earth_2K.obj',
+			'Planet.obj',
 			function(object) {
-				obj_carregado = object;
+				var obj_carregado = new THREE.Mesh(object, texture_mars);
 				object.position.x = 0;
 				object.position.y = 0;
 				object.position.z = 0;
