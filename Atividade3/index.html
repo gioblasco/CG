@@ -48,7 +48,6 @@
 		static_light2.position.set(0, -7, 0);
 		scene.add(static_light2);
 
-
 		//Setando background
 		scene.background = new THREE.Color("darkblue");
 
@@ -70,11 +69,13 @@
 
 		var mars_geometry   = new THREE.SphereGeometry(2.65, 32, 32);
 		mars_geometry.translate(12,0,0);
+		mars_geometry.rotateY(0.03);
 		var marsMesh = new THREE.Mesh(mars_geometry, texture_mars);
 		scene.add(marsMesh);
 
 		var mercury_geometry   = new THREE.SphereGeometry(1.9, 32, 32);
 		mercury_geometry.translate(-20,0,0);
+		mercury_geometry.rotateY(0.05);
 		var mercuryMesh = new THREE.Mesh(mercury_geometry, texture_mercury);
 		scene.add(mercuryMesh);
 
@@ -87,22 +88,36 @@
 		// elemento <canvas>
 		document.body.appendChild(renderer.domElement);
 
+		var camera = camera1; //default
+
 		// Setando rotação do sol
 		var animate = function() {
-			timestamp = Date.now() * 0.000009;
+			timestamp = Date.now() * 0.0000009;
 			sun.position.x = Math.cos(timestamp * 35) * 35;
     	sun.position.z = Math.sin(timestamp * 35) * 35;
 			light.position.x = sun.position.x;
 			light.position.z = sun.position.z;
-			mars_geometry.rotateY(0.03);
-			mercury_geometry.rotateY(0.05);
 			earthMesh.rotation.y += 0.015;
 			marsMesh.rotation.y += 0.01;
 			mercuryMesh.rotation.y += 0.02;
 			requestAnimationFrame(animate);
-			renderer.render(scene, camera2);
+			renderer.render(scene, camera);
 		};
 		animate();
+
+		document.onkeydown = checkKey;
+
+		function checkKey(e) {
+		    if (e.keyCode == '37') {
+		       camera = camera1;
+					 animate();
+		    }
+		    else if (e.keyCode == '39') {
+		       camera = camera2;
+					 animate();
+		    }
+		}
+
 
 	</script>
 </body>
