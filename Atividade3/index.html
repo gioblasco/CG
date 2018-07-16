@@ -49,7 +49,7 @@
 		var static_light2 = new THREE.DirectionalLight(0xffffcc, 0.4);
 		static_light2.position.set(0, -7, 0);
 		scene.add(static_light2);
-		
+
 
 		//Setando background
 		scene.background = new THREE.Color("darkblue");
@@ -76,7 +76,7 @@
 		scene.add(marsMesh);
 
 		var mercury_geometry   = new THREE.SphereGeometry(1.9, 32, 32);
-		mercury_geometry.translate(-15,0,0);
+		mercury_geometry.translate(-20,0,0);
 		var mercuryMesh = new THREE.Mesh(mercury_geometry, texture_mercury);
 		scene.add(mercuryMesh);
 
@@ -96,17 +96,19 @@
 		controls.update();
 
 		var a = new THREE.Vector3( 15/15.0332, 1/15.0332, 0 );
-	
+
 		// Setando rotação do sol
 		var animate = function() {
-			timestamp = Date.now() * 0.00003;
-			sun.position.x = Math.cos(timestamp * 25) * 25;
-    		sun.position.z = Math.sin(timestamp * 25) * 25;
+			timestamp = Date.now() * 0.000009;
+			sun.position.x = Math.cos(timestamp * 35) * 35;
+    	sun.position.z = Math.sin(timestamp * 35) * 35;
 			light.position.x = sun.position.x;
 			light.position.z = sun.position.z;
-			earth_geometry.rotateY(0.01);
-			mars_geometry.rotateY(0.01);
-			mercury_geometry.rotateY(0.01);
+			mars_geometry.rotateY(0.03);
+			mercury_geometry.rotateY(0.05);
+			earthMesh.rotation.y += 0.015;
+			marsMesh.rotation.y += 0.01;
+			mercuryMesh.rotation.y += 0.02;
 			requestAnimationFrame(animate);
 			renderer.render(scene, camera1);
 			controls.update();
