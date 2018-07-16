@@ -32,7 +32,7 @@
 		var camera2 = new THREE.PerspectiveCamera(50, (window.innerWidth ) / window.innerHeight, 0.1, 1000);
 
 		//Setando posição da câmera 1
-		camera1.position.z = 30;
+		camera1.position.z = 40;
 		camera1.position.y = 5;
 		camera1.position.x = 0;
 
@@ -52,7 +52,7 @@
 		scene.add(static_light);
 
 		//Setando formato do sol
-		var sun_geometry = new THREE.SphereGeometry(3, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
+		var sun_geometry = new THREE.SphereGeometry(6, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
 		var sun_material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
 		var sun = new THREE.Mesh(sun_geometry, sun_material);
 		sun.position.set(0,0, 0);
@@ -66,19 +66,19 @@
 		var texture_earth = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_earth_daymap.jpg')});
 		var texture_mercury = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_mercury.jpg')});
 
-		var earth_geometry   = new THREE.SphereGeometry(3, 32, 32);
-  		var earthMesh = new THREE.Mesh(earth_geometry, texture_earth);
-  		scene.add(earthMesh);
+		var earth_geometry   = new THREE.SphereGeometry(5, 32, 32);
+		var earthMesh = new THREE.Mesh(earth_geometry, texture_earth);
+		scene.add(earthMesh);
 
-  		var mars_geometry   = new THREE.SphereGeometry(4, 32, 32);
-  		mars_geometry.translate(10,0,0);
-  		var marsMesh = new THREE.Mesh(mars_geometry, texture_mars);
-  		scene.add(marsMesh);
+		var mars_geometry   = new THREE.SphereGeometry(3, 32, 32);
+		mars_geometry.translate(15,0,0);
+		var marsMesh = new THREE.Mesh(mars_geometry, texture_mars);
+		scene.add(marsMesh);
 
-  		var mercury_geometry   = new THREE.SphereGeometry(2, 32, 32);
-  		mercury_geometry.translate(-10,0,0);
-  		var mercuryMesh = new THREE.Mesh(mercury_geometry, texture_mercury);
-  		scene.add(mercuryMesh);
+		var mercury_geometry   = new THREE.SphereGeometry(2, 32, 32);
+		mercury_geometry.translate(-15,0,0);
+		var mercuryMesh = new THREE.Mesh(mercury_geometry, texture_mercury);
+		scene.add(mercuryMesh);
 
 		// renderer é o que faz o objeto aparecer na tela
 		var renderer = new THREE.WebGLRenderer();
