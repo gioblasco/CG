@@ -60,7 +60,7 @@
  		var texture_mars = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_mars.jpg')});
 		var texture_earth = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_earth_daymap.jpg')});
 		var texture_mercury = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_mercury.jpg')});
-		var texture_sun = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_sun.jpg')});
+		var texture_sun = new THREE.MeshToonMaterial({map: textureLoader.load('2k_sun.jpg')});
 
 		//Setando formato do sol
 		var sun_geometry = new THREE.SphereGeometry(6, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
