@@ -27,19 +27,27 @@
     <div id = "inicio" style="margin-top: 30em; color:lightblue">
       <h3> <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla Espaço</span> </h3>
     </div>
+
+    <div id = "fim" style="margin-top: 30em; color:lightblue">
+      <h1> Parabéns! Você ajudou o Pooh a achar tudo o que ele queria e agora ele está muito feliz! </h1>
+    </div>
     <script src="three.min.js"></script>
     <script src="walls.js"></script>
 
     <script>
 
+    (function(){
+      document.getElementById("fim").style.display = 'none';
+    })();
+
     var camera, scene, renderer, geometry, material, mesh, sphere, pointLight, plane,
-        plane2, center;
+        plane2, center, id;
 
     var mouseX = 0,
         mouseY = 0,
         mouseZ = 0;
 
-    var maze = {width: 15, large:15, cellSize:500};
+    var maze = {width: 15, large:9, cellSize:500};
 
     var angleY=0;
     var angleX=0;
@@ -49,13 +57,14 @@
     var incrementoX = Math.PI/(windowHalfX);
     var incrementoY = Math.PI/(windowHalfY);
 
-    var posInitial = {x:1, z:7};
+    var posInitial = {x:1, z:4};
     var ray;
 
     window.wallGeometries = [];
 
     document.onkeydown = checaInicio;
 
+    // detecta espaço, remove a div de inicio e começa o jogo
 		function checaInicio(e) {
 		    if (e.keyCode == '32') {
            document.getElementById("inicio").remove();
@@ -238,20 +247,8 @@
 
     };
 
-    // function onDocumentMouseMove(e) {
-    //     difference = mouseX-e.clientX;
-    //     angleX-=incrementoX*difference;
-    //
-    //     mouseX = e.clientX;
-    //     if(mouseX<=windowHalfX-100&&difference>0){
-    //         angleX-=incrementoX*5;
-    //     }
-    //     if(mouseX>=windowHalfX+100&&difference<0){
-    //         angleX+=incrementoX*5;
-    //     }
-    //     //x movement ok
-    //     e.preventDefault();
-    // };
+    var bola = 0, pote = 0;
+
     function onDocumentKeyDown(e){
         var keyCode = e.which||e.keyCode;
         //
@@ -290,12 +287,22 @@
         }
         // se houver colisão com os objetos
         if(ray.intersectObject(mesh).length>0){
+            pote = 1;
             scene.remove(mesh);
             document.getElementById('cube').setAttribute('style','text-decoration:line-through;color:#007700');
         }
         if(ray.intersectObject(sphere).length>0){
+            bola = 1;
             scene.remove(sphere);
             document.getElementById('ball').setAttribute('style','text-decoration:line-through;color:#EE8712');
+        }
+        // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
+        if(pote && bola){
+          document.getElementById("fim").style.display = 'block';
+          cancelAnimationFrame(id);
+          while(scene.children.length > 0){
+            scene.remove(scene.children[0]);
+          }
         }
     };
 
@@ -304,7 +311,7 @@
         center.x = windowHalfX*32*Math.cos(angleX);
         center.z = windowHalfX*32*Math.sin(angleX);
 
-        requestAnimationFrame(animate);
+        id = requestAnimationFrame(animate);
 
         mesh.rotation.x += 0.01;
         mesh.rotation.y += 0.02;
