@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset=utf-8>
+	<title>Atividade 3</title>
+	<link rel="shortcut icon" type="image/png" href="icone.png"/>
+	<style>
+		body {
+			margin: 0;
+		}
+
+
+	</style>
+</head>
+
+<body>
+	<script src="../three/three.js"></script>
+	<script src="../three/OBJLoader.js"></script>
+	<script src="../three/OrbitControls.js"></script>
+
+	<script>
+		var scene = new THREE.Scene();
+
+		//cria camera com (FOV, aspect radio, near, far)
+		var camera1 = new THREE.PerspectiveCamera(100, (window.innerWidth ) / window.innerHeight, 0.1, 3000);
+		var camera2 = new THREE.PerspectiveCamera(100, (window.innerWidth ) / window.innerHeight, 1, 1000);
+
+		//Setando posição da câmera 1
+		camera1.position.set(0,5,40);
+
+		//Setando posição da câmera 2
+		camera2.position.set(0,40,5);
+		camera2.up = new THREE.Vector3(0,0,-1);
+		camera2.lookAt(new THREE.Vector3(0,0,0));
+
+		// Setando iluminação do sol
+		var light = new THREE.PointLight(0xffffcc, 3.0);
+		light.position.set(0, 0, 0);
+		scene.add(light);
+
+		//Setando iluminação estática
+		var static_light = new THREE.DirectionalLight(0xffffcc, 0.4);
+		static_light.position.set(0, 7, 0);
+		scene.add(static_light);
+		var static_light2 = new THREE.DirectionalLight(0xffffcc, 0.4);
+		static_light2.position.set(0, -7, 0);
+		scene.add(static_light2);
+
+		//Setando background
+		scene.background = new THREE.Color("darkblue");
+
+		var textureLoader = new THREE.TextureLoader();
+ 		var texture_mars = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_mars.jpg')});
+		var texture_earth = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_earth_daymap.jpg')});
+		var texture_mercury = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_mercury.jpg')});
+		var texture_sun = new THREE.MeshToonMaterial({map: textureLoader.load('2k_sun.jpg')});
+
+		//Setando formato do sol
+		var sun_geometry = new THREE.SphereGeometry(6, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
+		var sun = new THREE.Mesh(sun_geometry, texture_sun);
+		sun.position.set(0,0, 0);
+		scene.add( sun );
+
+		var earth_geometry   = new THREE.SphereGeometry(5, 32, 32);
+		var earthMesh = new THREE.Mesh(earth_geometry, texture_earth);
+		scene.add(earthMesh);
+
+		var mars_geometry   = new THREE.SphereGeometry(2.65, 32, 32);
+		mars_geometry.translate(12,0,0);
+		mars_geometry.rotateY(0.03);
+		var marsMesh = new THREE.Mesh(mars_geometry, texture_mars);
+		scene.add(marsMesh);
+
+		var mercury_geometry   = new THREE.SphereGeometry(1.9, 32, 32);
+		mercury_geometry.translate(-20,0,0);
+		mercury_geometry.rotateY(0.05);
+		var mercuryMesh = new THREE.Mesh(mercury_geometry, texture_mercury);
+		scene.add(mercuryMesh);
+
+		// renderer é o que faz o objeto aparecer na tela
+		var renderer = new THREE.WebGLRenderer();
+		// aqui é definido que o renderer tem tamanho da janela do browser
+		renderer.setSize(0.99*window.innerWidth, 0.99*window.innerHeight);
+		renderer.setPixelRatio(window.devicePixelRatio);
+
+		// elemento <canvas>
+		document.body.appendChild(renderer.domElement);
+
+		var camera = camera1; //default
+
+		// Setando rotação do sol
+		var animate = function() {
+			timestamp = Date.now() * 0.0000009;
+			sun.position.x = Math.cos(timestamp * 35) * 35;
+    	sun.position.z = Math.sin(timestamp * 35) * 35;
+			light.position.x = sun.position.x;
+			light.position.z = sun.position.z;
+			earthMesh.rotation.y += 0.015;
+			marsMesh.rotation.y += 0.01;
+			mercuryMesh.rotation.y += 0.02;
+			requestAnimationFrame(animate);
+			renderer.render(scene, camera);
+		};
+		animate();
+
+		document.onkeydown = checkKey;
+
+		function checkKey(e) {
+		    if (e.keyCode == '37') {
+		       camera = camera1;
+					 //animate();
+		    }
+		    else if (e.keyCode == '39') {
+		       camera = camera2;
+					 //animate();
+		    }
+		}
+
+
+	</script>
+</body>
+
+</html>
