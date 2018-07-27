@@ -1,124 +1,320 @@
-<!DOCTYPE html>
-<html>
-
+<!doctype html>
+<html lang="en">
 <head>
-	<meta charset=utf-8>
-	<title>Atividade 3</title>
-	<link rel="shortcut icon" type="image/png" href="icone.png"/>
-	<style>
-		body {
-			margin: 0;
-		}
+    <meta charset="UTF-8">
+    <title>Jogo do Labirinto</title>
+    <style>
+    body {
+        color: #ffffff;
+        /*font-family:Monospace;*/
+        font-size:15px;
+        text-align:center;
+        font-weight: bold;
 
+        background-color: purple;
+        margin: 0px;
+        overflow: hidden;
+        cursor: none;
+    }
 
-	</style>
+    </style>
 </head>
-
 <body>
-	<script src="../three/three.js"></script>
-	<script src="../three/OBJLoader.js"></script>
-	<script src="../three/OrbitControls.js"></script>
 
-	<script>
-		var scene = new THREE.Scene();
+    <h1 id="header" style="color:lightblue">Labirinto do Ursinho Pooh</h1>
+    <h3> Ajude Pooh à achar o Leitão, o Tigrão, sua <span id="cube">bola colorida</span> e o principal, seu <span id="ball" style="color:orange">pote de mel</span>! </h3>
 
-		//cria camera com (FOV, aspect radio, near, far)
-		var camera1 = new THREE.PerspectiveCamera(100, (window.innerWidth ) / window.innerHeight, 0.1, 3000);
-		var camera2 = new THREE.PerspectiveCamera(100, (window.innerWidth ) / window.innerHeight, 1, 1000);
+    <div id = "inicio" style="margin-top: 30em; color:lightblue">
+      <h3> <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla Espaço</span> </h3>
+    </div>
+    <script src="three.min.js"></script>
+    <script src="walls.js"></script>
 
-		//Setando posição da câmera 1
-		camera1.position.set(0,5,40);
+    <script>
 
-		//Setando posição da câmera 2
-		camera2.position.set(0,40,5);
-		camera2.up = new THREE.Vector3(0,0,-1);
-		camera2.lookAt(new THREE.Vector3(0,0,0));
+    var camera, scene, renderer, geometry, material, mesh, sphere, pointLight, plane,
+        plane2, center;
 
-		// Setando iluminação do sol
-		var light = new THREE.PointLight(0xffffcc, 3.0);
-		light.position.set(0, 0, 0);
-		scene.add(light);
+    var mouseX = 0,
+        mouseY = 0,
+        mouseZ = 0;
 
-		//Setando iluminação estática
-		var static_light = new THREE.DirectionalLight(0xffffcc, 0.4);
-		static_light.position.set(0, 7, 0);
-		scene.add(static_light);
-		var static_light2 = new THREE.DirectionalLight(0xffffcc, 0.4);
-		static_light2.position.set(0, -7, 0);
-		scene.add(static_light2);
+    var maze = {width: 15, large:15, cellSize:500};
 
-		//Setando background
-		scene.background = new THREE.Color("darkblue");
+    var angleY=0;
+    var angleX=0;
 
-		var textureLoader = new THREE.TextureLoader();
- 		var texture_mars = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_mars.jpg')});
-		var texture_earth = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_earth_daymap.jpg')});
-		var texture_mercury = new THREE.MeshPhongMaterial({map: textureLoader.load('2k_mercury.jpg')});
-		var texture_sun = new THREE.MeshToonMaterial({map: textureLoader.load('2k_sun.jpg')});
+    var windowHalfX = window.innerWidth / 2;
+    var windowHalfY = window.innerHeight / 1.5;
+    var incrementoX = Math.PI/(windowHalfX);
+    var incrementoY = Math.PI/(windowHalfY);
 
-		//Setando formato do sol
-		var sun_geometry = new THREE.SphereGeometry(6, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
-		var sun = new THREE.Mesh(sun_geometry, texture_sun);
-		sun.position.set(0,0, 0);
-		scene.add( sun );
+    var posInitial = {x:1, z:7};
+    var ray;
 
-		var earth_geometry   = new THREE.SphereGeometry(5, 32, 32);
-		var earthMesh = new THREE.Mesh(earth_geometry, texture_earth);
-		scene.add(earthMesh);
+    window.wallGeometries = [];
 
-		var mars_geometry   = new THREE.SphereGeometry(2.65, 32, 32);
-		mars_geometry.translate(12,0,0);
-		mars_geometry.rotateY(0.03);
-		var marsMesh = new THREE.Mesh(mars_geometry, texture_mars);
-		scene.add(marsMesh);
+    document.onkeydown = checaInicio;
 
-		var mercury_geometry   = new THREE.SphereGeometry(1.9, 32, 32);
-		mercury_geometry.translate(-20,0,0);
-		mercury_geometry.rotateY(0.05);
-		var mercuryMesh = new THREE.Mesh(mercury_geometry, texture_mercury);
-		scene.add(mercuryMesh);
-
-		// renderer é o que faz o objeto aparecer na tela
-		var renderer = new THREE.WebGLRenderer();
-		// aqui é definido que o renderer tem tamanho da janela do browser
-		renderer.setSize(0.99*window.innerWidth, 0.99*window.innerHeight);
-		renderer.setPixelRatio(window.devicePixelRatio);
-
-		// elemento <canvas>
-		document.body.appendChild(renderer.domElement);
-
-		var camera = camera1; //default
-
-		// Setando rotação do sol
-		var animate = function() {
-			timestamp = Date.now() * 0.0000009;
-			sun.position.x = Math.cos(timestamp * 35) * 35;
-    	sun.position.z = Math.sin(timestamp * 35) * 35;
-			light.position.x = sun.position.x;
-			light.position.z = sun.position.z;
-			earthMesh.rotation.y += 0.015;
-			marsMesh.rotation.y += 0.01;
-			mercuryMesh.rotation.y += 0.02;
-			requestAnimationFrame(animate);
-			renderer.render(scene, camera);
-		};
-		animate();
-
-		document.onkeydown = checkKey;
-
-		function checkKey(e) {
-		    if (e.keyCode == '37') {
-		       camera = camera1;
-					 //animate();
+		function checaInicio(e) {
+		    if (e.keyCode == '32') {
+           document.getElementById("inicio").remove();
+		       init();
 		    }
-		    else if (e.keyCode == '39') {
-		       camera = camera2;
-					 //animate();
-		    }
-		}
+    }
+
+    function init() {
+
+        scene = new THREE.Scene();
+
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+        camera.position.x = (posInitial.x-maze.width/2)*maze.cellSize;
+        camera.position.z = (posInitial.z-maze.large/2)*maze.cellSize-maze.cellSize/2;
+
+        camera2 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+        camera2.position.x = (posInitial.x-maze.width/2)*maze.cellSize - 20;
+        camera2.position.z = (posInitial.z-maze.large/2)*maze.cellSize-maze.cellSize/2 - 20;
+
+        center = new THREE.Vector3(camera.position.x+250, 0, 0);
+
+        geometry = new THREE.CubeGeometry(200, 200, 200);
+        geometrySphere = new THREE.SphereGeometry(30, 16, 16);
+        material = new THREE.MeshBasicMaterial({color: 0x00FF00, wireframe: true, side: THREE.DoubleSide});
+        geometryPlane = new THREE.PlaneGeometry(maze.width*maze.cellSize, maze.large*maze.cellSize);
+        geometryPlaneBasic = new THREE.PlaneGeometry(maze.cellSize, maze.cellSize, 1, 1);
+
+        // carrega textura do céu
+        var texture = THREE.ImageUtils.loadTexture('textures/blue.png', {}, function(){
+            renderer.render(scene, camera);
+            animate();
+        });
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(maze.width, maze.large);
+        texture.needsUpdate = true;
+        material = new THREE.MeshBasicMaterial({ map : texture, doubleSided: true,side: THREE.DoubleSide });
+
+        // carrega textura do chão
+        var texture2 = THREE.ImageUtils.loadTexture('textures/grass.png', {}, function(){
+            renderer.render(scene, camera);
+            animate();
+        });
+        texture2.wrapS = THREE.RepeatWrapping;
+        texture2.wrapT = THREE.RepeatWrapping;
+        texture2.repeat.set(maze.width, maze.large);
+        texture2.needsUpdate = true;
+        material2 = new THREE.MeshBasicMaterial({ map : texture2, doubleSided: true,side: THREE.DoubleSide });
+
+        // carrega textura das paredes
+        var wallTexture = THREE.ImageUtils.loadTexture('textures/blocks.jpeg');
+        wallTexture.wrapS = THREE.RepeatWrapping;
+        wallTexture.wrapT = THREE.RepeatWrapping;
+        wallTexture.needsUpdate = true;
+
+        mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({map : wallTexture,color: 0x009900, wireframe: false}));
+        mesh.position.z=-1500;
+
+        // objeto simples para a bola
+        sphere = new THREE.Mesh(geometrySphere, new THREE.MeshBasicMaterial({map: new THREE.ImageUtils.loadTexture('textures/ball_texture.png')}));
+        sphere.position.z = 2000;
+        sphere.position.x = 1000;
+
+        // objeto para o plano superior
+        plane = new THREE.Mesh(geometryPlane, material);
+        plane.side = THREE.DoubleSide;
+
+        plane.rotation.x = -Math.PI/2;
+        plane.position.y = 250;
+        plane.position.x = 0;
+        plane.position.z = 0;
+
+        // objeto para o plano inferior
+        plane2 = new THREE.Mesh(geometryPlane, material2);
+        plane2.rotation.x = -Math.PI/2;
+        plane2.position.y=-250;
+        plane2.position.x = 0;
+        plane2.position.z = 0;
+
+        var wall;
+        var wallMaterial = new THREE.MeshBasicMaterial({ map : wallTexture, doubleSided: true,side: THREE.DoubleSide });
 
 
-	</script>
+    // estrutura
+
+    //           _________parede1_________
+    //           |                        |
+    //           |                        |
+    //           |                        |
+    // parede4   |                        | parede2
+    //           |                        |
+    //           |            x           |
+    //           |_________parede3________|
+
+    // x é onde começa
+
+        // povoa paredes 2 e 4
+        for(var i=0; i<maze.width; i ++){
+            // parede 2
+            wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
+            wall.position.z = maze.large/2*maze.cellSize;
+            wall.position.y = 0;
+            wall.position.x = (i-maze.width/2)*maze.cellSize+maze.cellSize/2;
+            scene.add(wall);
+            wallGeometries.push(wall);
+            // parede 4
+            wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
+            wall.position.z = -maze.large/2*maze.cellSize;
+            wall.position.y = 0;
+            wall.position.x = (i-maze.width/2)*maze.cellSize+maze.cellSize/2;
+            scene.add(wall);
+            wallGeometries.push(wall);
+        }
+
+        // povoa paredes 1 e 3
+        for(var i=0; i<maze.large; i ++){
+            // parede 1
+            wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
+            wall.position.x = maze.width/2*maze.cellSize;
+            wall.rotation.y= Math.PI/2;
+            wall.position.y = 0;
+            wall.position.z = (i-maze.large/2)*maze.cellSize+maze.cellSize/2;
+            scene.add(wall);
+            wallGeometries.push(wall);
+            // parede 3
+            wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
+            wall.position.x = -maze.width/2*maze.cellSize;
+            wall.rotation.y= Math.PI/2;
+            wall.position.y = 0;
+            wall.position.z = (i-maze.large/2)*maze.cellSize+maze.cellSize/2;
+            scene.add(wall);
+            wallGeometries.push(wall);
+        }
+
+        var offsizeX=0;
+        var offsizeZ=0;
+
+        // povoa paredes intermediarias
+        for(var i = 0; i<walls.length; i++){
+            wallData = walls[i];
+            wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
+            if(wallData.orientation=='front'){
+                offsizeX=-250;
+                offsizeZ=-maze.cellSize;
+            }else if(wallData.orientation=='back'){
+                offsizeX=-250;
+                offsizeZ=0;
+            }else if(wallData.orientation=='left'){
+                offsizeX=-maze.cellSize;
+                offsizeZ=-250;
+            }else if(wallData.orientation=='right'){
+                offsizeX=0;
+                offsizeZ=-250;
+            }
+            wall.position.x = (wallData.x-maze.width/2)*maze.cellSize+offsizeX;
+            wall.rotation.y= wallData.orientation=='left'||wallData.orientation=='right'?Math.PI/2:0;
+            wall.position.y = 0;
+            wall.position.z = (wallData.z-maze.large/2)*maze.cellSize+offsizeZ;
+            scene.add(wall);
+            wallGeometries.push(wall);
+        }
+
+
+        scene.add(mesh);
+        scene.add(sphere);
+        scene.add(plane);
+        scene.add(plane2);
+
+        //addiding some light to the scene
+        pointLight = new THREE.DirectionalLight( 0xffffff );
+        pointLight.position.set( 0, 0, 1 ).normalize();
+
+        scene.add(pointLight);
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight*.75);
+        window.camera = camera;
+        document.body.appendChild(renderer.domElement);
+        document.addEventListener('keydown', onDocumentKeyDown, false);
+
+    };
+
+    // function onDocumentMouseMove(e) {
+    //     difference = mouseX-e.clientX;
+    //     angleX-=incrementoX*difference;
+    //
+    //     mouseX = e.clientX;
+    //     if(mouseX<=windowHalfX-100&&difference>0){
+    //         angleX-=incrementoX*5;
+    //     }
+    //     if(mouseX>=windowHalfX+100&&difference<0){
+    //         angleX+=incrementoX*5;
+    //     }
+    //     //x movement ok
+    //     e.preventDefault();
+    // };
+    function onDocumentKeyDown(e){
+        var keyCode = e.which||e.keyCode;
+        //
+        if(keyCode == 38){
+            camera.translateZ(-30);
+        }
+        if(keyCode == 39){
+            angleX+=incrementoX*50;
+        }
+        if(keyCode == 40){
+            camera.translateZ(30);
+        }
+        if(keyCode == 37){
+            angleX-=incrementoX*50;
+        }
+        ray = new THREE.Raycaster(camera.position, center.clone().normalize());
+        ray.far=100;
+
+        // se houver colisão com as paredes
+        if(ray.intersectObjects(wallGeometries).length>0){
+            if(keyCode == 38){
+                camera.translateZ(30);
+            }
+            if(keyCode == 39){
+                camera.translateX(-30);
+            }
+            if(keyCode == 40){
+                camera.translateZ(-30);
+            }
+            if(keyCode == 37){
+                camera.translateX(30);
+            }
+        }else{
+            angleY+=incrementoY;
+            center.y = 400*Math.sin(angleY*80);
+        }
+        // se houver colisão com os objetos
+        if(ray.intersectObject(mesh).length>0){
+            scene.remove(mesh);
+            document.getElementById('cube').setAttribute('style','text-decoration:line-through;color:#007700');
+        }
+        if(ray.intersectObject(sphere).length>0){
+            scene.remove(sphere);
+            document.getElementById('ball').setAttribute('style','text-decoration:line-through;color:#EE8712');
+        }
+    };
+
+    function animate() {
+
+        center.x = windowHalfX*32*Math.cos(angleX);
+        center.z = windowHalfX*32*Math.sin(angleX);
+
+        requestAnimationFrame(animate);
+
+        mesh.rotation.x += 0.01;
+        mesh.rotation.y += 0.02;
+        sphere.rotation.x -= 0.01;
+
+        camera.lookAt(center);
+        renderer.render(scene, camera);
+
+    };
+
+    </script>
 </body>
-
 </html>
