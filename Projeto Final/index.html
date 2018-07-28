@@ -22,7 +22,7 @@
 <body>
 
     <h1 id="header" style="color:lightblue">Labirinto do Ursinho Pooh</h1>
-    <h3> Ajude Pooh à achar o Leitão, o Tigrão, sua <span id="ball">bola colorida</span> e o principal, seu <span id="cube" style="color:orange">pote de mel</span>! </h3>
+    <h3> Ajude Pooh à achar o Leitão, o Tigrão, sua <span id="ball" style="color:orange">bola colorida</span> e o principal, seu famigerado <span id="cube" style="color:orange">pote de mel</span>! </h3>
 
     <div id = "inicio" style="margin-top: 30em; color:lightblue">
       <h3> <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla Espaço</span> </h3>
@@ -47,7 +47,7 @@
         mouseY = 0,
         mouseZ = 0;
 
-    var maze = {width: 15, large:9, cellSize:500};
+    var maze = {width: 15, large:15, cellSize:500};
 
     var angleY=0;
     var angleX=0;
@@ -57,7 +57,7 @@
     var incrementoX = Math.PI/(windowHalfX);
     var incrementoY = Math.PI/(windowHalfY);
 
-    var posInitial = {x:1, z:4};
+    var posInitial = {x:1, z:14};
     var ray;
 
     window.wallGeometries = [];
@@ -87,7 +87,7 @@
         center = new THREE.Vector3(camera.position.x+250, 0, 0);
 
         geometry = new THREE.CubeGeometry(200, 200, 200);
-        geometrySphere = new THREE.SphereGeometry(30, 16, 16);
+        geometrySphere = new THREE.SphereGeometry(50, 16, 16);
         material = new THREE.MeshBasicMaterial({color: 0x00FF00, wireframe: true, side: THREE.DoubleSide});
         geometryPlane = new THREE.PlaneGeometry(maze.width*maze.cellSize, maze.large*maze.cellSize);
         geometryPlaneBasic = new THREE.PlaneGeometry(maze.cellSize, maze.cellSize, 1, 1);
@@ -120,13 +120,23 @@
         wallTexture.wrapT = THREE.RepeatWrapping;
         wallTexture.needsUpdate = true;
 
+        // leitão
+        var posLeitao = {x: 8, z: 4};
         mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({map : wallTexture,color: 0x009900, wireframe: false}));
-        mesh.position.z=-1500;
+        mesh.position.z = (posLeitao.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
+        mesh.position.x = (posLeitao.x-maze.width/2)*maze.cellSize - 250;
+
+        // tigrão
+        var posTigrao = {x: 12, z: 2};
+
+        // pote de mel
+        var posMel = {x: 12, z: 14};
 
         // objeto simples para a bola
+        var posBola = {x: 1, z: 5};
         sphere = new THREE.Mesh(geometrySphere, new THREE.MeshBasicMaterial({map: new THREE.ImageUtils.loadTexture('textures/ball_texture.png')}));
-        sphere.position.z = 2000;
-        sphere.position.x = 1000;
+        sphere.position.z = (posBola.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
+        sphere.position.x = (posBola.x-maze.width/2)*maze.cellSize - 250;
 
         // objeto para o plano superior
         plane = new THREE.Mesh(geometryPlane, material);
