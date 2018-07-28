@@ -299,12 +299,12 @@
         if(ray.intersectObject(mesh).length>0){
             pote = 1;
             scene.remove(mesh);
-            document.getElementById('cube').setAttribute('style','text-decoration:line-through;color:#007700');
+            document.getElementById('cube').setAttribute('style','text-decoration:line-through;color:orange');
         }
         if(ray.intersectObject(sphere).length>0){
             bola = 1;
             scene.remove(sphere);
-            document.getElementById('ball').setAttribute('style','text-decoration:line-through;color:#EE8712');
+            document.getElementById('ball').setAttribute('style','text-decoration:line-through;color:orange');
         }
         // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
         if(pote && bola){
