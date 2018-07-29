@@ -22,7 +22,7 @@
 <body>
 
     <h1 id="header" style="color:lightblue">Labirinto do Pooh</h1>
-    <h3> Ajude o ursinho achar o Leitão, o Tigrão, sua <span id="ball" style="color:orange">bola colorida</span> e o principal, seu famigerado <span id="cube" style="color:orange">pote de mel</span>! </h3>
+    <h3> Ajude o ursinho achar o <span id="piglet" style="color:orange">Leitão, o Tigrão, sua <span id="ball" style="color:orange">bola colorida</span> e o principal, seu famigerado pote de mel</span>! </h3>
 
     <div id = "inicio" style="margin-top: 30em; color:lightblue">
       <h3> <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla Espaço</span> </h3>
@@ -32,8 +32,10 @@
       <h1> Parabéns! Você ajudou o Pooh a achar tudo o que ele queria e agora ele está muito feliz! </h1>
     </div>
     <script src="three.min.js"></script>
+    <script src="../three/three.js"></script>
     <script src="../three/OBJLoader.js"></script>
     <script src="../three/MTLLoader.js"></script>
+    <script src="../three/STLLoader.js"></script>
     <script src="walls.js"></script>
 
     <script>
@@ -42,7 +44,7 @@
       document.getElementById("fim").style.display = 'none';
     })();
 
-    var camera, scene, renderer, geometry, material, mesh, sphere, pointLight, plane,
+    var camera, scene, renderer, geometry, material, piglet, tigger, sphere, light, plane,
         plane2, center, id;
 
     var mouseX = 0,
@@ -88,7 +90,6 @@
 
         center = new THREE.Vector3(camera.position.x+250, 0, 0);
 
-        geometry = new THREE.CubeGeometry(200, 200, 200);
         geometrySphere = new THREE.SphereGeometry(50, 16, 16);
         material = new THREE.MeshBasicMaterial({color: 0x00FF00, wireframe: true, side: THREE.DoubleSide});
         geometryPlane = new THREE.PlaneGeometry(maze.width*maze.cellSize, maze.large*maze.cellSize);
@@ -122,34 +123,48 @@
         wallTexture.wrapT = THREE.RepeatWrapping;
         wallTexture.needsUpdate = true;
 
+        var mtlPiglet = new THREE.MTLLoader();
+
         // leitão
         var posLeitao = {x: 8, z: 4};
-        var mtlLoader = new THREE.MTLLoader();
-        mtlLoader.setBaseUrl( "http://threejs.org/examples/obj/walt/" );
-        mtlLoader.setPath( "http://threejs.org/examples/obj/walt/" );
-
-        mtlLoader.load( 'WaltHead.mtl', function( materials ) {
-
+        mtlPiglet.setPath("./objects/piglet/");
+        mtlPiglet.load('Piglet.mtl', function( materials ) {
           materials.preload();
-
           var objLoader = new THREE.OBJLoader();
           objLoader.setMaterials( materials );
-          objLoader.setPath( "http://threejs.org/examples/obj/walt/" );
-          objLoader.load( 'WaltHead.obj', function ( object ) {
-
-            mesh = object;
-            mesh.position.y = -50;
-            scene.add( mesh );
-
+          objLoader.setPath("./objects/piglet/");
+          objLoader.load('Piglet.obj', function ( object ) {
+            piglet = object;
+            piglet.position.z = (posLeitao.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
+            piglet.position.y = -210;
+            piglet.position.x = (posLeitao.x-maze.width/2)*maze.cellSize - 250;
+            piglet.scale.set(6, 6, 6);
+            scene.add(piglet);
           } );
 
         } );
-        mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({map : wallTexture,color: 0x009900, wireframe: false}));
-        mesh.position.z = (posLeitao.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
-        mesh.position.x = (posLeitao.x-maze.width/2)*maze.cellSize - 250;
+
+        var mtlTigger = new THREE.MTLLoader();
 
         // tigrão
         var posTigrao = {x: 12, z: 2};
+        mtlTigger.setPath("./objects/tigger/");
+        mtlTigger.load('Tigger.mtl', function( materials ) {
+          materials.preload();
+          var objLoader = new THREE.OBJLoader();
+          objLoader.setMaterials( materials );
+          objLoader.setPath("./objects/tigger/");
+          objLoader.load('Tigger.obj', function ( object ) {
+            tigger = object;
+            tigger.position.z = (posTigrao.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
+            tigger.position.y = -210;
+            tigger.position.x = (posTigrao.x-maze.width/2)*maze.cellSize - 250;
+            tigger.scale.set(3, 3, 3);
+            scene.add(tigger);
+          } );
+
+        } );
+
 
         // pote de mel
         var posMel = {x: 12, z: 14};
@@ -260,16 +275,15 @@
         }
 
 
-        scene.add(mesh);
         scene.add(sphere);
         scene.add(plane);
         scene.add(plane2);
 
         //addiding some light to the scene
-        pointLight = new THREE.DirectionalLight( 0xffffff );
-        pointLight.position.set( 0, 0, 1 ).normalize();
+        light = new THREE.AmbientLight( 0xffffff );
+        light.position.set( 0, 0, 1 ).normalize();
 
-        scene.add(pointLight);
+        scene.add(light);
 
         renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight*.75);
@@ -279,7 +293,7 @@
 
     };
 
-    var bola = 0, pote = 0;
+    var bola = 0, leitao = 0, tigrao = 0, pote = 0;
 
     function onDocumentKeyDown(e){
         var keyCode = e.which||e.keyCode;
@@ -318,10 +332,10 @@
             center.y = 400*Math.sin(angleY*80);
         }
         // se houver colisão com os objetos
-        if(ray.intersectObject(mesh).length>0){
-            pote = 1;
-            scene.remove(mesh);
-            document.getElementById('cube').setAttribute('style','text-decoration:line-through;color:orange');
+        if(ray.intersectObject(piglet).length>0){
+            leitao = 1;
+            scene.remove(piglet);
+            document.getElementById('piglet').setAttribute('style','text-decoration:line-through;color:orange');
         }
         if(ray.intersectObject(sphere).length>0){
             bola = 1;
@@ -329,7 +343,7 @@
             document.getElementById('ball').setAttribute('style','text-decoration:line-through;color:orange');
         }
         // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
-        if(pote && bola){
+        if(bola && leitao){
           document.getElementById("fim").style.display = 'block';
           cancelAnimationFrame(id);
           while(scene.children.length > 0){
@@ -345,9 +359,9 @@
 
         id = requestAnimationFrame(animate);
 
-        mesh.rotation.x += 0.01;
-        mesh.rotation.y += 0.02;
+        piglet.rotation.y += 0.01;
         sphere.rotation.x -= 0.01;
+        tigger.rotation.y += 0.01;
 
         camera.lookAt(center);
         renderer.render(scene, camera);
