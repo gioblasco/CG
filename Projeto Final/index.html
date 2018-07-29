@@ -22,7 +22,7 @@
 <body>
 
     <h1 id="header" style="color:lightblue">Labirinto do Pooh</h1>
-    <h3> Ajude o ursinho achar o <span id="piglet" style="color:orange">Leitão, o Tigrão, sua <span id="ball" style="color:orange">bola colorida</span> e o principal, seu famigerado pote de mel</span>! </h3>
+    <h3> Ajude o ursinho achar o <span id="piglet" style="color:orange">Leitão</span>, o Tigrão, sua <span id="ball" style="color:orange">bola colorida</span> e o principal, seu famigerado pote de mel</span>! </h3>
 
     <div id = "inicio" style="margin-top: 30em; color:lightblue">
       <h3> <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla Espaço</span> </h3>
@@ -31,7 +31,7 @@
     <div id = "fim" style="margin-top: 30em; color:lightblue">
       <h1> Parabéns! Você ajudou o Pooh a achar tudo o que ele queria e agora ele está muito feliz! </h1>
     </div>
-    <script src="three.min.js"></script>
+
     <script src="../three/three.js"></script>
     <script src="../three/OBJLoader.js"></script>
     <script src="../three/MTLLoader.js"></script>
@@ -44,7 +44,7 @@
       document.getElementById("fim").style.display = 'none';
     })();
 
-    var camera, scene, renderer, geometry, material, piglet, tigger, sphere, light, plane,
+    var camera, scene, renderer, geometry, material, piglet, tigger, honey, sphere, light, plane,
         plane2, center, id;
 
     var mouseX = 0,
@@ -96,7 +96,7 @@
         geometryPlaneBasic = new THREE.PlaneGeometry(maze.cellSize, maze.cellSize, 1, 1);
 
         // carrega textura do céu
-        var texture = THREE.ImageUtils.loadTexture('textures/blue.png', {}, function(){
+        var texture = new THREE.TextureLoader().load('textures/blue.png', function(){
             renderer.render(scene, camera);
             animate();
         });
@@ -104,10 +104,10 @@
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set(maze.width, maze.large);
         texture.needsUpdate = true;
-        material = new THREE.MeshBasicMaterial({ map : texture, doubleSided: true,side: THREE.DoubleSide });
+        material = new THREE.MeshBasicMaterial({ map : texture, side: THREE.DoubleSide });
 
         // carrega textura do chão
-        var texture2 = THREE.ImageUtils.loadTexture('textures/grass.png', {}, function(){
+        var texture2 = new THREE.TextureLoader().load('textures/grass.png', {}, function(){
             renderer.render(scene, camera);
             animate();
         });
@@ -115,10 +115,10 @@
         texture2.wrapT = THREE.RepeatWrapping;
         texture2.repeat.set(maze.width, maze.large);
         texture2.needsUpdate = true;
-        material2 = new THREE.MeshBasicMaterial({ map : texture2, doubleSided: true,side: THREE.DoubleSide });
+        material2 = new THREE.MeshBasicMaterial({ map : texture2, side: THREE.DoubleSide });
 
         // carrega textura das paredes
-        var wallTexture = THREE.ImageUtils.loadTexture('textures/blocks.jpeg');
+        var wallTexture = new THREE.TextureLoader().load('textures/blocks.jpeg');
         wallTexture.wrapS = THREE.RepeatWrapping;
         wallTexture.wrapT = THREE.RepeatWrapping;
         wallTexture.needsUpdate = true;
@@ -165,13 +165,14 @@
 
         } );
 
+        var loaderHoney = new THREE.OBJLoader();
 
         // pote de mel
         var posMel = {x: 12, z: 14};
 
         // objeto simples para a bola
         var posBola = {x: 1, z: 5};
-        sphere = new THREE.Mesh(geometrySphere, new THREE.MeshBasicMaterial({map: new THREE.ImageUtils.loadTexture('textures/ball_texture.png')}));
+        sphere = new THREE.Mesh(geometrySphere, new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('textures/ball_texture.png')}));
         sphere.position.z = (posBola.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
         sphere.position.x = (posBola.x-maze.width/2)*maze.cellSize - 250;
 
