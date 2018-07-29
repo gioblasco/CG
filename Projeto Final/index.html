@@ -32,6 +32,8 @@
       <h1> Parabéns! Você ajudou o Pooh a achar tudo o que ele queria e agora ele está muito feliz! </h1>
     </div>
     <script src="three.min.js"></script>
+    <script src="../three/OBJLoader.js"></script>
+    <script src="../three/MTLLoader.js"></script>
     <script src="walls.js"></script>
 
     <script>
@@ -122,6 +124,26 @@
 
         // leitão
         var posLeitao = {x: 8, z: 4};
+        var mtlLoader = new THREE.MTLLoader();
+        mtlLoader.setBaseUrl( "http://threejs.org/examples/obj/walt/" );
+        mtlLoader.setPath( "http://threejs.org/examples/obj/walt/" );
+
+        mtlLoader.load( 'WaltHead.mtl', function( materials ) {
+
+          materials.preload();
+
+          var objLoader = new THREE.OBJLoader();
+          objLoader.setMaterials( materials );
+          objLoader.setPath( "http://threejs.org/examples/obj/walt/" );
+          objLoader.load( 'WaltHead.obj', function ( object ) {
+
+            mesh = object;
+            mesh.position.y = -50;
+            scene.add( mesh );
+
+          } );
+
+        } );
         mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({map : wallTexture,color: 0x009900, wireframe: false}));
         mesh.position.z = (posLeitao.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
         mesh.position.x = (posLeitao.x-maze.width/2)*maze.cellSize - 250;
