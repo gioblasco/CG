@@ -13,4 +13,4 @@ newmtl bee_body
   Kd 0 0 0
   Ks 0 0 0
   illum 2
-  map_Kd images\bee.tif
+  map_Kd BEE.TIF
