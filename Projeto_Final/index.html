@@ -35,7 +35,6 @@
     <script src="../three/three.js"></script>
     <script src="../three/OBJLoader.js"></script>
     <script src="../three/MTLLoader.js"></script>
-    <script src="../three/STLLoader.js"></script>
     <script src="walls.js"></script>
 
     <script>
@@ -44,7 +43,7 @@
       document.getElementById("fim").style.display = 'none';
     })();
 
-    var camera, scene, renderer, geometry, material, piglet, tigger, honey, sphere, light, plane,
+    var camera, scene, renderer, geometry, material, piglet, tigger, honey, bee, sphere, light, plane,
         plane2, center, id;
 
     var mouseX = 0,
@@ -170,23 +169,23 @@
         // pote de mel
         var posMel = {x: 2, z: 15};
 		
-		// abelha
 		var mtlBee = new THREE.MTLLoader();
 		
+		// abelha		
 		var posAbelha = {x:2, z:15};
 		
-		mtlBee.setPath("./objects/");
-        mtlBee.load('bee_obj.mtl', function( materials ) {
+		mtlBee.setPath("./objects/bee/");
+        mtlBee.load('BEE.MTL', function( materials ) {
           materials.preload();
           var objLoader = new THREE.OBJLoader();
           objLoader.setMaterials( materials );
-          objLoader.setPath("./objects/");
-          objLoader.load('bee_obj.OBJ', function ( object ) {
+          objLoader.setPath("./objects/bee/");
+          objLoader.load('BEE.OBJ', function ( object ) {
             bee = object;
             bee.position.z = (posAbelha.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
-            bee.position.y = -210;
+            bee.position.y = 0;
             bee.position.x = (posAbelha.x-maze.width/2)*maze.cellSize - 250;
-            bee.scale.set(3, 3, 3);
+            bee.scale.set(10, 10, 10);
             scene.add(bee);
           } );
 
