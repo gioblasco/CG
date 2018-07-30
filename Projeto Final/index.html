@@ -353,10 +353,32 @@
         }
     };
 
+    /*
+        Pontos de controle da curva de belzier, gerados pelo site: https://www.desmos.com/calculator/cahqdxeshd
+        x0 = 2.7;
+        y0 = 5.46;
+
+        x1 = 7.56;
+        y1 = 18.9;
+
+        x2 = 13.3;
+        y2 = -3.15;
+
+        x3 = 23.33;
+        y3 = 9.45;
+    */
     function animate() {
 
         center.x = windowHalfX*32*Math.cos(angleX);
         center.z = windowHalfX*32*Math.sin(angleX);
+
+        /*
+            Belzier da abelha
+
+            t = Math.abs(Math.sin((Math.floor(Date.now()/10)%360 * Math.PI / 180.0)))
+			bee.position.x = (1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3));
+    	    bee.position.y = (1-t)*((1-t)*((1-t)*y0+t*y1)+t*((1-t)*y1+t*y2))+t*((1-t)*((1-t)*y1+t*y2)+t*((1-t)*y2+t*y3));
+        */
 
         id = requestAnimationFrame(animate);
 
