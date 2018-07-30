@@ -24,11 +24,11 @@
     <h1 id="header" style="color:lightblue">Labirinto do Pooh</h1>
     <h3> Ajude o ursinho achar o <span id="piglet" style="color:orange">Leitão</span>, o <span id="tigger" style="color:orange">Tigrão</span>, sua <span id="ball" style="color:orange">bola colorida</span> e o principal, seu pote de mel</span>! </h3>
 
-    <div id = "inicio" style="margin-top: 30em; color:lightblue">
+    <div id = "inicio" style="margin-top: 20em; color:lightblue">
       <h3> <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla Espaço</span> </h3>
     </div>
 
-    <div id = "fim" style="margin-top: 30em; color:lightblue">
+    <div id = "fim" style="margin-top: 20em; color:lightblue">
       <h1> Parabéns! Você ajudou o Pooh a achar tudo o que ele queria e agora ele está muito feliz! </h1>
     </div>
 
@@ -164,11 +164,34 @@
           } );
 
         } );
-
-        var loaderHoney = new THREE.OBJLoader();
+		
+        var objHoney = new THREE.OBJLoader();
 
         // pote de mel
-        var posMel = {x: 12, z: 14};
+        var posMel = {x: 2, z: 15};
+		
+		// abelha
+		var mtlBee = new THREE.MTLLoader();
+		
+		var posAbelha = {x:2, z:15};
+		
+		mtlBee.setPath("./objects/");
+        mtlBee.load('bee_obj.mtl', function( materials ) {
+          materials.preload();
+          var objLoader = new THREE.OBJLoader();
+          objLoader.setMaterials( materials );
+          objLoader.setPath("./objects/");
+          objLoader.load('bee_obj.OBJ', function ( object ) {
+            bee = object;
+            bee.position.z = (posAbelha.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
+            bee.position.y = -210;
+            bee.position.x = (posAbelha.x-maze.width/2)*maze.cellSize - 250;
+            bee.scale.set(3, 3, 3);
+            scene.add(bee);
+          } );
+
+        } );
+		
 
         // objeto simples para a bola
         var posBola = {x: 1, z: 5};
