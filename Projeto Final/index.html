@@ -354,7 +354,7 @@
     };
 
     /*
-        Pontos de controle da curva de belzier, gerados pelo site: https://www.desmos.com/calculator/cahqdxeshd
+        Pontos de controle da curva de Bezier, gerados pelo site: https://www.desmos.com/calculator/cahqdxeshd
         x0 = 2.7;
         y0 = 5.46;
 
@@ -373,9 +373,11 @@
         center.z = windowHalfX*32*Math.sin(angleX);
 
         /*
-            Belzier da abelha
+            //Bezier da abelha
 
+            //PS se a abelha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
             t = Math.abs(Math.sin((Math.floor(Date.now()/10)%360 * Math.PI / 180.0)))
+            
 			bee.position.x = (1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3));
     	    bee.position.y = (1-t)*((1-t)*((1-t)*y0+t*y1)+t*((1-t)*y1+t*y2))+t*((1-t)*((1-t)*y1+t*y2)+t*((1-t)*y2+t*y3));
         */
