@@ -35,6 +35,8 @@
     <script src="../three/three.js"></script>
     <script src="../three/OBJLoader.js"></script>
     <script src="../three/MTLLoader.js"></script>
+	<script src="../three/FBXLoader.js"></script>
+	<script src="../three/inflate.min.js"></script>
     <script src="walls.js"></script>
 
     <script>
@@ -43,7 +45,7 @@
       document.getElementById("fim").style.display = 'none';
     })();
 
-    var camera, scene, renderer, geometry, material, piglet, tigger, honey, bee, sphere, light, plane,
+    var camera, scene, renderer, geometry, material, piglet, tigger, honey, bee, pooh, sphere, light, plane,
         plane2, center, id;
 
     var mouseX = 0,
@@ -121,6 +123,28 @@
         wallTexture.wrapS = THREE.RepeatWrapping;
         wallTexture.wrapT = THREE.RepeatWrapping;
         wallTexture.needsUpdate = true;
+		
+		var mtlPooh = new THREE.MTLLoader();
+		
+		// pooh
+        var posPooh = {x: 1, z: 14};
+        mtlPooh.setPath("./objects/pooh/");
+        mtlPooh.load('Pooh.mtl', function( materials ) {
+          materials.preload();
+          var objLoader = new THREE.OBJLoader();
+          objLoader.setMaterials( materials );
+          objLoader.setPath("./objects/pooh/");
+          objLoader.load('Pooh.obj', function ( object ) {
+            pooh = object;
+            pooh.position.z = (posPooh.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
+            pooh.position.y = -210;
+            pooh.position.x = (posPooh.x-maze.width/2)*maze.cellSize - 250;
+            pooh.scale.set(4, 4, 4);
+            scene.add(pooh);
+          } );
+
+        } );
+		
 
         var mtlPiglet = new THREE.MTLLoader();
 
@@ -174,22 +198,52 @@
 		// abelha		
 		var posAbelha = {x:2, z:15};
 		
-		mtlBee.setPath("./objects/bee/");
-        mtlBee.load('BEE.MTL', function( materials ) {
+		var loader = new THREE.FBXLoader();
+		loader.load( './objects/bee.fbx', function ( object ) {
+
+			object.mixer = new THREE.AnimationMixer( object );
+			mixers.push( object.mixer );
+
+			var action = object.mixer.clipAction( object.animations[ 0 ] );
+			action.play();
+/*
+			object.traverse( function ( child ) {
+
+				if ( child.isMesh ) {
+
+					child.castShadow = true;
+					child.receiveShadow = true;
+
+				}
+
+			} );
+	*/		
+			object.position.z = (posAbelha.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
+			object.position.y = 0;
+			object.position.x = (posAbelha.x-maze.width/2)*maze.cellSize - 250;
+
+			scene.add( object );
+
+		} );
+		
+		/*
+		mtlBee.setPath("./objects/dragonfly/");
+        mtlBee.load('dragnfly.mtl', function( materials ) {
           materials.preload();
           var objLoader = new THREE.OBJLoader();
           objLoader.setMaterials( materials );
-          objLoader.setPath("./objects/bee/");
-          objLoader.load('BEE.OBJ', function ( object ) {
+          objLoader.setPath("./objects/dragonfly/");
+          objLoader.load('dragnfly.obj', function ( object ) {
             bee = object;
             bee.position.z = (posAbelha.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
             bee.position.y = 0;
             bee.position.x = (posAbelha.x-maze.width/2)*maze.cellSize - 250;
-            bee.scale.set(10, 10, 10);
+            bee.scale.set(1000, 1000, 1000);
             scene.add(bee);
           } );
 
         } );
+		*/
 		
 
         // objeto simples para a bola
@@ -412,27 +466,26 @@
      */
 
     function animate() {
+	
+		var x0 = 2.7, y0 = 5.46, x1 = 7.56, y1 = 18.9, x2 = 13.3, y2 = -3.15, x3 = 23.33, y3 = 9.45;
 
         center.x = windowHalfX*32*Math.cos(angleX);
         center.z = windowHalfX*32*Math.sin(angleX);
-
-        /*
-            //Bezier da abelha
-
-            //PS se a abelha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
-            t = Math.abs(Math.sin((Math.floor(Date.now()/10)%360 * Math.PI / 180.0)))
-    
- 			bee.position.x = (1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3));
-     	    bee.position.y = (1-t)*((1-t)*((1-t)*y0+t*y1)+t*((1-t)*y1+t*y2))+t*((1-t)*((1-t)*y1+t*y2)+t*((1-t)*y2+t*y3));
-         */
-
-
 
         id = requestAnimationFrame(animate);
 
         piglet.rotation.y += 0.01;
         sphere.rotation.x -= 0.01;
         tigger.rotation.y += 0.01;
+		pooh.rotation.y += 0.02;
+		
+		//Bezier da abelha
+
+        //PS se a abelha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
+        //t = Math.abs(Math.sin((Math.floor(Date.now()/10)%360 * Math.PI / 180.0)))
+    
+ 		//bee.position.x = (1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3));
+     	//bee.position.y = (1-t)*((1-t)*((1-t)*y0+t*y1)+t*((1-t)*y1+t*y2))+t*((1-t)*((1-t)*y1+t*y2)+t*((1-t)*y2+t*y3));
 
         camera.lookAt(center);
         renderer.render(scene, camera);
