@@ -22,7 +22,7 @@
 <body>
 
     <h1 id="header" style="color:lightblue">Labirinto do Pooh</h1>
-    <h3> Ajude o ursinho achar o <span id="piglet" style="color:orange">Leitão</span>, o <span id="tigger" style="color:orange">Tigrão</span>, sua <span id="ball" style="color:orange">bola colorida</span> e o principal, seu pote de mel</span>! </h3>
+    <h3> Ajude o ursinho achar o <span id="piglet" style="color:orange">Leitão</span>, o <span id="tigger" style="color:orange">Tigrão</span>, sua <span id="ball" style="color:orange">bola colorida</span> e o principal, seu <span id="honey" style="color:orange">pote de mel</span>! </h3>
 
     <div id = "inicio" style="margin-top: 20em; color:lightblue">
       <h3> <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla Espaço</span> </h3>
@@ -452,9 +452,19 @@
 	            document.getElementById('tigger').setAttribute('style','text-decoration:line-through;color:orange');
 	        }
 	    }
+		
+		if(!pote){
+	    	var pospote = honey.getWorldPosition();
+	        if(((poscam.x - pospote.x) * (poscam.x - pospote.x) + (poscam.z - pospote.z) * (poscam.z - pospote.z)) < 10000){
+	            pote = 1;
+	            scene.remove(honey);
+	            document.getElementById('honey').setAttribute('style','text-decoration:line-through;color:orange');
+	        }
+	    }
+		
 
         // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
-        if(bola && leitao && tigrao){
+        if(bola && leitao && tigrao && pote){
           document.getElementById("fim").style.display = 'block';
           cancelAnimationFrame(id);
           while(scene.children.length > 0){
