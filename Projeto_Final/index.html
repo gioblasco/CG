@@ -125,7 +125,6 @@
 		var mtlPooh = new THREE.MTLLoader();
 		
 		// pooh
-        var posPooh = {x: 1, z: 15};
         mtlPooh.setPath("./objects/pooh/");
         mtlPooh.load('Pooh.mtl', function( materials ) {
           materials.preload();
@@ -134,10 +133,11 @@
           objLoader.setPath("./objects/pooh/");
           objLoader.load('Pooh.obj', function ( object ) {
             pooh = object;
-            pooh.position.z = (posPooh.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
-            pooh.position.y = -210;
-            pooh.position.x = (posPooh.x-maze.width/2)*maze.cellSize - 250;
-            pooh.scale.set(4, 4, 4);
+            pooh.position.x = (posInitial.x-maze.width/2)*maze.cellSize;
+			pooh.position.y = -250;
+			pooh.position.z = (posInitial.z-maze.large/2)*maze.cellSize-maze.cellSize/2;
+			pooh.rotation.y = Math.PI / 2;
+            pooh.scale.set(3.5, 3.5, 3.5);
             scene.add(pooh);
           } );
 
@@ -500,8 +500,14 @@
         piglet.rotation.y += 0.01;
         sphere.rotation.x -= 0.01;
         tigger.rotation.y += 0.01;
-		pooh.rotation.y += 0.02;
+		//pooh.rotation.y += 0.02;
 		honey.rotation.y += 0.02;
+		
+		pooh.position.copy( camera.position );
+		pooh.position.y = -250;
+		pooh.rotation.copy( camera.rotation );
+		pooh.updateMatrix();
+		pooh.translateZ( -100 );
 		
 		//Bezier da abelha
 
