@@ -46,9 +46,9 @@
     var camera, scene, renderer, geometry, material, piglet, tigger, honey, bee, pooh, sphere, light, plane,
         plane2, center, id;
 
-    var mouseX = 0,
-        mouseY = 0,
-        mouseZ = 0;
+    // var mouseX = 0,
+    //     mouseY = 0,
+    //     mouseZ = 0;
 
     var maze = {width: 15, large:15, cellSize:500};
 
@@ -121,9 +121,9 @@
         wallTexture.wrapS = THREE.RepeatWrapping;
         wallTexture.wrapT = THREE.RepeatWrapping;
         wallTexture.needsUpdate = true;
-		
+
 		var mtlPooh = new THREE.MTLLoader();
-		
+
 		// pooh
         mtlPooh.setPath("./objects/pooh/");
         mtlPooh.load('Pooh.mtl', function( materials ) {
@@ -134,15 +134,15 @@
           objLoader.load('Pooh.obj', function ( object ) {
             pooh = object;
             pooh.position.x = (posInitial.x-maze.width/2)*maze.cellSize;
-			pooh.position.y = -250;
-			pooh.position.z = (posInitial.z-maze.large/2)*maze.cellSize-maze.cellSize/2;
-			pooh.rotation.y = Math.PI / 2;
+			      pooh.position.y = -250;
+			      pooh.position.z = (posInitial.z-maze.large/2)*maze.cellSize-maze.cellSize/2;
+			      pooh.rotation.y = Math.PI / 2;
             pooh.scale.set(3.5, 3.5, 3.5);
             scene.add(pooh);
           } );
 
         } );
-		
+
 
         var mtlPiglet = new THREE.MTLLoader();
 
@@ -185,14 +185,14 @@
           } );
 
         } );
-		
+
         var mtlHoney = new THREE.MTLLoader();
 
         // pote de mel
         var posMel = {x: 12, z: 14};
 		var texture = new THREE.TextureLoader().load('./objects/honey.jpg');
  		var textureHoney = new THREE.MeshPhongMaterial({map: texture});
-		
+
 		mtlHoney.setPath("./objects/");
         mtlHoney.load('honeyjar.mtl', function( materials ) {
           materials.preload();
@@ -208,12 +208,12 @@
 			object.traverse( function(node){
 					if ( node.isMesh )
 						node.material = textureHoney;
-				}) ; 
+				}) ;
             scene.add(honey);
           } );
 
         } );
-		
+
 		/*
 		var loader = new THREE.OBJLoader();
 		loader.load(
@@ -224,21 +224,21 @@
 				honey.position.y = -100;
 				honey.position.x = (posMel.x-maze.width/2)*maze.cellSize - 250;
 				honey.scale.set(20, 20, 20);
-				
+
 				object.traverse( function(node){
 					if ( node.isMesh )
 						node.material = textureHoney;
-				}) ; 
+				}) ;
 				scene.add(honey);
 		});
 
 		*/
-		
+
 		var mtlBee = new THREE.MTLLoader();
-		
-		// abelha		
+
+		// abelha
 		var posAbelha = {x:2, z:15};
-		
+
 		/*
 		mtlBee.setPath("./objects/dragonfly/");
         mtlBee.load('dragnfly.mtl', function( materials ) {
@@ -257,7 +257,7 @@
 
         } );
 		*/
-		
+
 
         // objeto simples para a bola
         var posBola = {x: 1, z: 5};
@@ -452,7 +452,7 @@
 	            document.getElementById('tigger').setAttribute('style','text-decoration:line-through;color:orange');
 	        }
 	    }
-		
+
 		if(!pote){
 	    	var pospote = honey.getWorldPosition();
 	        if(((poscam.x - pospote.x) * (poscam.x - pospote.x) + (poscam.z - pospote.z) * (poscam.z - pospote.z)) < 10000){
@@ -461,7 +461,7 @@
 	            document.getElementById('honey').setAttribute('style','text-decoration:line-through;color:orange');
 	        }
 	    }
-		
+
 
         // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
         if(bola && leitao && tigrao && pote){
@@ -473,24 +473,11 @@
         }
     };
 
-    /*
-         Pontos de controle da curva de Bezier, gerados pelo site: https://www.desmos.com/calculator/cahqdxeshd
-         x0 = 2.7;
-         y0 = 5.46;
-
-         x1 = 7.56;
-         y1 = 18.9;
-
-         x2 = 13.3;
-         y2 = -3.15;
-
-         x3 = 23.33;
-         y3 = 9.45;
-     */
 
     function animate() {
-	
-		var x0 = 2.7, y0 = 5.46, x1 = 7.56, y1 = 18.9, x2 = 13.3, y2 = -3.15, x3 = 23.33, y3 = 9.45;
+
+        //pontos de controle bezier
+		    var x0 = 2.7, y0 = 5.46, x1 = 7.56, y1 = 18.9, x2 = 13.3, y2 = -3.15, x3 = 23.33, y3 = 9.45;
 
         center.x = windowHalfX*32*Math.cos(angleX);
         center.z = windowHalfX*32*Math.sin(angleX);
@@ -500,21 +487,22 @@
         piglet.rotation.y += 0.01;
         sphere.rotation.x -= 0.01;
         tigger.rotation.y += 0.01;
-		//pooh.rotation.y += 0.02;
-		honey.rotation.y += 0.02;
-		
-		pooh.position.copy( camera.position );
-		pooh.position.y = -250;
-		pooh.rotation.copy( camera.rotation );
-		pooh.updateMatrix();
-		pooh.translateZ( -100 );
-		
+    		//pooh.rotation.y += 0.02;
+    		honey.rotation.y += 0.02;
+
+    		pooh.position.copy( camera.position );
+    		pooh.position.y = -250;
+    		pooh.rotation.copy( camera.rotation );
+        pooh.rotation.y = Math.PI;
+    		pooh.updateMatrix();
+    		pooh.translateZ( -100 );
+
 		//Bezier da abelha
 
         //PS se a abelha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
         //t = Math.abs(Math.sin((Math.floor(Date.now()/10)%360 * Math.PI / 180.0)))
-    
- 		//bee.position.x = (1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3));
+
+ 		  //bee.position.x = (1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3));
      	//bee.position.y = (1-t)*((1-t)*((1-t)*y0+t*y1)+t*((1-t)*y1+t*y2))+t*((1-t)*((1-t)*y1+t*y2)+t*((1-t)*y2+t*y3));
 
         camera.lookAt(center);
