@@ -79,13 +79,16 @@
 
         scene = new THREE.Scene();
 
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.x = (posInitial.x-maze.width/2)*maze.cellSize;
-        camera.position.z = (posInitial.z-maze.large/2)*maze.cellSize-maze.cellSize/2;
+        camera1 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+        camera1.position.x = (posInitial.x-maze.width/2)*maze.cellSize;
+        camera1.position.z = (posInitial.z-maze.large/2)*maze.cellSize-maze.cellSize/2;
 
         camera2 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-        camera2.position.x = (posInitial.x-maze.width/2)*maze.cellSize - 20;
-        camera2.position.z = (posInitial.z-maze.large/2)*maze.cellSize-maze.cellSize/2 - 20;
+        camera2.position.x = (posInitial.x-maze.width/2)*maze.cellSize + 200;
+        camera2.position.z = (posInitial.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 200;
+        camera2.position.y += 75;
+
+        var camera = camera1;
 
         center = new THREE.Vector3(camera.position.x+250, 0, 0);
 
@@ -138,11 +141,11 @@
 			      pooh.position.z = (posInitial.z-maze.large/2)*maze.cellSize-maze.cellSize/2;
 			      pooh.rotation.y = Math.PI / 2;
             pooh.scale.set(3.5, 3.5, 3.5);
+            pooh.visible = false;
             scene.add(pooh);
           } );
 
         } );
-
 
         var mtlPiglet = new THREE.MTLLoader();
 
@@ -389,33 +392,40 @@
         var keyCode = e.which||e.keyCode;
         //
         if(keyCode == 38 || keyCode == 87){
-            camera.translateZ(-30);
+            camera1.translateZ(-30);
+        //    camera2.translateZ(-30);
         }
         if(keyCode == 39 || keyCode == 68){
             angleX+=incrementoX*60;
         }
         if(keyCode == 40 || keyCode == 83){
-            camera.translateZ(30);
+            camera1.translateZ(30);
+         //   camera2.translateZ(30);
         }
         if(keyCode == 37 || keyCode == 65){
             angleX-=incrementoX*60;
         }
-        ray = new THREE.Raycaster(camera.position, center.clone().normalize());
-        ray.far=100;
 
+
+        ray = new THREE.Raycaster(camera1.position, center.clone().normalize());
+        ray.far=100;
         // se houver colisão com as paredes
         if(ray.intersectObjects(wallGeometries).length>0){
             if(keyCode == 38 || keyCode == 87){
-                camera.translateZ(30);
+                camera1.translateZ(30);
+                camera2.translateZ(30);
             }
             if(keyCode == 39 || keyCode == 68){
-                camera.translateX(-30);
+                camera1.translateX(-30);
+                camera2.translateX(-30);
             }
             if(keyCode == 40 || keyCode == 83){
-                camera.translateZ(-30);
+                camera1.translateZ(-30);
+                camera2.translateZ(-30);
             }
             if(keyCode == 37 || keyCode == 65){
-                camera.translateX(30);
+                camera1.translateX(30);
+                camera2.translateX(30);
             }
         }else{
             angleY+=incrementoY;
@@ -423,8 +433,7 @@
         }
 
 
-    	var poscam = camera.position;
-
+    	var poscam = camera1.position;
         // se houver colisão com os objetos
        	if(!leitao){
       		var posleitao = piglet.getWorldPosition();
@@ -471,13 +480,27 @@
             scene.remove(scene.children[0]);
           }
         }
+
+//        camera2.position.x = camera1.position.x + 100;
+//        camera2.position.z = camera1.position.z + 100;
+
+        if(keyCode == 70){
+        	if(camera == camera1){
+        		camera = camera2;
+        		pooh.visible = true;
+        	}
+        	else{
+        		camera = camera1;
+        			pooh.visible = false;
+        	}
+        }
     };
 
 
     function animate() {
 
         //pontos de controle bezier
-		    var x0 = 2.7, y0 = 5.46, x1 = 7.56, y1 = 18.9, x2 = 13.3, y2 = -3.15, x3 = 23.33, y3 = 9.45;
+		var x0 = 2.7, y0 = 5.46, x1 = 7.56, y1 = 18.9, x2 = 13.3, y2 = -3.15, x3 = 23.33, y3 = 9.45;
 
         center.x = windowHalfX*32*Math.cos(angleX);
         center.z = windowHalfX*32*Math.sin(angleX);
@@ -487,15 +510,13 @@
         piglet.rotation.y += 0.01;
         sphere.rotation.x -= 0.01;
         tigger.rotation.y += 0.01;
-    		//pooh.rotation.y += 0.02;
-    		honey.rotation.y += 0.02;
+    	honey.rotation.y += 0.02;
 
-    		pooh.position.copy( camera.position );
-    		pooh.position.y = -250;
-    		pooh.rotation.copy( camera.rotation );
-        pooh.rotation.y = Math.PI;
-    		pooh.updateMatrix();
-    		pooh.translateZ( -100 );
+    	pooh.position.copy( camera1.position );
+    	pooh.position.y = -250;
+		pooh.lookAt(center);		
+    	pooh.updateMatrix();
+    //	pooh.translateZ( -100 );
 
 		//Bezier da abelha
 
@@ -505,7 +526,15 @@
  		  //bee.position.x = (1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3));
      	//bee.position.y = (1-t)*((1-t)*((1-t)*y0+t*y1)+t*((1-t)*y1+t*y2))+t*((1-t)*((1-t)*y1+t*y2)+t*((1-t)*y2+t*y3));
 
-        camera.lookAt(center);
+
+     	var relativeCameraOffset = new THREE.Vector3(0, 100, -100);
+     	var cameraOffset = relativeCameraOffset.applyMatrix4(pooh.matrixWorld);
+
+     	camera2.position.x = cameraOffset.x;
+     	camera2.position.z = cameraOffset.z;
+
+        camera1.lookAt(center);
+        camera2.lookAt(center);
         renderer.render(scene, camera);
 
     };
