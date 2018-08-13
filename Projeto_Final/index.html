@@ -409,6 +409,7 @@
             A: 65,
             D: 68,
             F: 70,
+            SHIFT: 16,
 
             isDown: function (keyCode) {
                 return this._pressed[keyCode];
@@ -434,14 +435,20 @@
             */
 
             if (Key.isDown(Key.UP) || Key.isDown(Key.W)) {
-                camera1.translateZ(-30);
+                if (Key.isDown(Key.SHIFT))
+                    camera1.translateZ(-30);
+                else
+                    camera1.translateZ(-15);
             }
 
             if (Key.isDown(Key.RIGHT) || Key.isDown(Key.D)) {
                 angleX += incrementoX * 45;
             }
             if (Key.isDown(Key.DOWN) || Key.isDown(Key.S)) {
-                camera1.translateZ(30);
+                if (Key.isDown(Key.SHIFT))
+                    camera1.translateZ(30);
+                else
+                    camera1.translateZ(15);
             }
             if (Key.isDown(Key.LEFT) || Key.isDown(Key.A)) {
                 angleX -= incrementoX * 45;
