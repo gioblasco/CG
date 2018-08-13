@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf8">
+</head>
+<body>
+<script>
+document.addEventListener('keydown', (e) => {
+  if (!e.repeat)
+    console.log('first keydown event. key property value is ' + e.key);
+  else
+    console.log('keydown event repeats. key property value is '+e.key);
+});
+</script>
+</body>
+</ħtml>
