@@ -1,35 +1,42 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Jogo do Labirinto</title>
     <style>
-    body {
-        color: #ffffff;
-        font-family:Arial;
-        font-size:15px;
-        text-align:center;
-        font-weight: bold;
+        body {
+            color: #ffffff;
+            font-family: Arial;
+            font-size: 15px;
+            text-align: center;
+            font-weight: bold;
 
-        background-color: purple;
-        margin: 0px;
-        overflow: hidden;
-        cursor: none;
-    }
-
+            background-color: purple;
+            margin: 0px;
+            overflow: hidden;
+            cursor: none;
+        }
     </style>
 </head>
+
 <body>
 
     <h1 id="header" style="color:lightblue">Labirinto do Pooh</h1>
-    <h3> Ajude o ursinho achar o <span id="piglet" style="color:orange">Leitão</span>, o <span id="tigger" style="color:orange">Tigrão</span>, sua <span id="ball" style="color:orange">bola colorida</span> e o principal, seu <span id="honey" style="color:orange">pote de mel</span>! </h3>
+    <h3> Ajude o ursinho achar o
+        <span id="piglet" style="color:orange">Leitão</span>, o
+        <span id="tigger" style="color:orange">Tigrão</span>, sua
+        <span id="ball" style="color:orange">bola colorida</span> e o principal, seu
+        <span id="honey" style="color:orange">pote de mel</span>! </h3>
 
-    <div id = "inicio" style="margin-top: 20em; color:lightblue">
-      <h3> <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla Espaço</span> </h3>
+    <div id="inicio" style="margin-top: 20em; color:lightblue">
+        <h3>
+            <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla Espaço</span>
+        </h3>
     </div>
 
-    <div id = "fim" style="margin-top: 20em; color:lightblue">
-      <h1> Parabéns! Você ajudou o Pooh a achar tudo o que ele queria e agora ele está muito feliz! </h1>
+    <div id="fim" style="margin-top: 20em; color:lightblue">
+        <h1> Parabéns! Você ajudou o Pooh a achar tudo o que ele queria e agora ele está muito feliz! </h1>
     </div>
 
     <script src="../three/three.js"></script>
@@ -39,523 +46,524 @@
 
     <script>
 
-    (function(){
-      document.getElementById("fim").style.display = 'none';
-    })();
+        (function () {
+            document.getElementById("fim").style.display = 'none';
+        })();
 
-    var camera, scene, renderer, geometry, material, piglet, tigger, honey, bee, pooh, sphere, light, plane,
-        plane2, center, id;
+        var camera, scene, renderer, geometry, material, piglet, tigger, honey, bee, pooh, sphere, light, plane,
+            plane2, center, id;
 
-    // var mouseX = 0,
-    //     mouseY = 0,
-    //     mouseZ = 0;
+        // var mouseX = 0,
+        //     mouseY = 0,
+        //     mouseZ = 0;
 
-    var maze = {width: 15, large:15, cellSize:500};
+        var maze = { width: 15, large: 15, cellSize: 500 };
 
-    var angleY=0;
-    var angleX=0;
+        var angleY = 0;
+        var angleX = 0;
 
-    var windowHalfX = window.innerWidth / 2;
-    var windowHalfY = window.innerHeight / 1.5;
-    var incrementoX = Math.PI/(windowHalfX);
-    var incrementoY = Math.PI/(windowHalfY);
+        var windowHalfX = window.innerWidth / 2;
+        var windowHalfY = window.innerHeight / 1.5;
+        var incrementoX = Math.PI / (windowHalfX);
+        var incrementoY = Math.PI / (windowHalfY);
 
-    var posInitial = {x:1, z:14};
-    var ray;
+        var posInitial = { x: 1, z: 14 };
+        var ray;
 
-    var camcontrol = 0;
+        var camcontrol = 0;
 
-    window.wallGeometries = [];
+        window.wallGeometries = [];
 
-    document.onkeydown = checaInicio;
+        document.onkeydown = checaInicio;
 
-    // detecta espaço, remove a div de inicio e começa o jogo
-		function checaInicio(e) {
-		    if (e.keyCode == '32') {
-           document.getElementById("inicio").remove();
-		       init();
-		    }
-    }
-
-    function init() {
-
-        scene = new THREE.Scene();
-
-        camera1 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-        camera1.position.x = (posInitial.x-maze.width/2)*maze.cellSize;
-        camera1.position.z = (posInitial.z-maze.large/2)*maze.cellSize-maze.cellSize/2;
-
-        camera2 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-        camera2.position.x = (posInitial.x-maze.width/2)*maze.cellSize + 200;
-        camera2.position.z = (posInitial.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 200;
-        camera2.position.y += 75;
-
-        var camera = camera1;
-
-        center = new THREE.Vector3(camera.position.x+250, 0, 0);
-
-        geometrySphere = new THREE.SphereGeometry(50, 16, 16);
-        material = new THREE.MeshBasicMaterial({color: 0x00FF00, wireframe: true, side: THREE.DoubleSide});
-        geometryPlane = new THREE.PlaneGeometry(maze.width*maze.cellSize, maze.large*maze.cellSize);
-        geometryPlaneBasic = new THREE.PlaneGeometry(maze.cellSize, maze.cellSize, 1, 1);
-
-        // carrega textura do céu
-        var texture = new THREE.TextureLoader().load('textures/blue.png', function(){
-            renderer.render(scene, camera);
-            animate();
-        });
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set(maze.width, maze.large);
-        texture.needsUpdate = true;
-        material = new THREE.MeshBasicMaterial({ map : texture, side: THREE.DoubleSide });
-
-        // carrega textura do chão
-        var texture2 = new THREE.TextureLoader().load('textures/grass.png', {}, function(){
-            renderer.render(scene, camera);
-            animate();
-        });
-        texture2.wrapS = THREE.RepeatWrapping;
-        texture2.wrapT = THREE.RepeatWrapping;
-        texture2.repeat.set(maze.width, maze.large);
-        texture2.needsUpdate = true;
-        material2 = new THREE.MeshBasicMaterial({ map : texture2, side: THREE.DoubleSide });
-
-        // carrega textura das paredes
-        var wallTexture = new THREE.TextureLoader().load('textures/pedra.jpg');
-        wallTexture.wrapS = THREE.RepeatWrapping;
-        wallTexture.wrapT = THREE.RepeatWrapping;
-        wallTexture.needsUpdate = true;
-
-		var mtlPooh = new THREE.MTLLoader();
-
-		// pooh
-        mtlPooh.setPath("./objects/pooh/");
-        mtlPooh.load('Pooh.mtl', function( materials ) {
-          materials.preload();
-          var objLoader = new THREE.OBJLoader();
-          objLoader.setMaterials( materials );
-          objLoader.setPath("./objects/pooh/");
-          objLoader.load('Pooh.obj', function ( object ) {
-            pooh = object;
-            pooh.position.x = (posInitial.x-maze.width/2)*maze.cellSize;
-			      pooh.position.y = -250;
-			      pooh.position.z = (posInitial.z-maze.large/2)*maze.cellSize-maze.cellSize/2;
-			      pooh.rotation.y = Math.PI / 2;
-            pooh.scale.set(3.5, 3.5, 3.5);
-            pooh.visible = false;
-            scene.add(pooh);
-          } );
-
-        } );
-
-        var mtlPiglet = new THREE.MTLLoader();
-
-        // leitão
-        var posLeitao = {x: 8, z: 4};
-        mtlPiglet.setPath("./objects/piglet/");
-        mtlPiglet.load('Piglet.mtl', function( materials ) {
-          materials.preload();
-          var objLoader = new THREE.OBJLoader();
-          objLoader.setMaterials( materials );
-          objLoader.setPath("./objects/piglet/");
-          objLoader.load('Piglet.obj', function ( object ) {
-            piglet = object;
-            piglet.position.z = (posLeitao.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
-            piglet.position.y = -210;
-            piglet.position.x = (posLeitao.x-maze.width/2)*maze.cellSize - 250;
-            piglet.scale.set(6, 6, 6);
-            scene.add(piglet);
-          } );
-
-        } );
-
-        var mtlTigger = new THREE.MTLLoader();
-
-        // tigrão
-        var posTigrao = {x: 12, z: 2};
-        mtlTigger.setPath("./objects/tigger/");
-        mtlTigger.load('Tigger.mtl', function( materials ) {
-          materials.preload();
-          var objLoader = new THREE.OBJLoader();
-          objLoader.setMaterials( materials );
-          objLoader.setPath("./objects/tigger/");
-          objLoader.load('Tigger.obj', function ( object ) {
-            tigger = object;
-            tigger.position.z = (posTigrao.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
-            tigger.position.y = -210;
-            tigger.position.x = (posTigrao.x-maze.width/2)*maze.cellSize - 250;
-            tigger.scale.set(3, 3, 3);
-            scene.add(tigger);
-          } );
-
-        } );
-
-        var mtlHoney = new THREE.MTLLoader();
-
-        // pote de mel
-        var posMel = {x: 12, z: 14};
-		var texture = new THREE.TextureLoader().load('./objects/honey.jpg');
- 		var textureHoney = new THREE.MeshPhongMaterial({map: texture});
-
-		mtlHoney.setPath("./objects/");
-        mtlHoney.load('honeyjar.mtl', function( materials ) {
-          materials.preload();
-          var objLoader = new THREE.OBJLoader();
-          objLoader.setMaterials( materials );
-          objLoader.setPath("./objects/");
-          objLoader.load('honeyjar2.obj', function ( object ) {
-            honey = object;
-            honey.position.z = (posMel.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
-            honey.position.y = -200;
-            honey.position.x = (posMel.x-maze.width/2)*maze.cellSize - 250;
-            honey.scale.set(20, 20, 20);
-			object.traverse( function(node){
-					if ( node.isMesh )
-						node.material = textureHoney;
-				}) ;
-            scene.add(honey);
-          } );
-
-        } );
-
-		/*
-		var loader = new THREE.OBJLoader();
-		loader.load(
-			'./objects/honeyjar2.obj',
-			function(object) {
-				honey = object;
-				honey.position.z = (posMel.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
-				honey.position.y = -100;
-				honey.position.x = (posMel.x-maze.width/2)*maze.cellSize - 250;
-				honey.scale.set(20, 20, 20);
-
-				object.traverse( function(node){
-					if ( node.isMesh )
-						node.material = textureHoney;
-				}) ;
-				scene.add(honey);
-		});
-
-		*/
-
-		var mtlBee = new THREE.MTLLoader();
-
-		// abelha
-		var posAbelha = {x:2, z:15};
-
-		/*
-		mtlBee.setPath("./objects/dragonfly/");
-        mtlBee.load('dragnfly.mtl', function( materials ) {
-          materials.preload();
-          var objLoader = new THREE.OBJLoader();
-          objLoader.setMaterials( materials );
-          objLoader.setPath("./objects/dragonfly/");
-          objLoader.load('dragnfly.obj', function ( object ) {
-            bee = object;
-            bee.position.z = (posAbelha.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
-            bee.position.y = 0;
-            bee.position.x = (posAbelha.x-maze.width/2)*maze.cellSize - 250;
-            bee.scale.set(1000, 1000, 1000);
-            scene.add(bee);
-          } );
-
-        } );
-		*/
-
-
-        // objeto simples para a bola
-        var posBola = {x: 1, z: 5};
-        sphere = new THREE.Mesh(geometrySphere, new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load('textures/ball_texture.png')}));
-        sphere.position.z = (posBola.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
-        sphere.position.x = (posBola.x-maze.width/2)*maze.cellSize - 250;
-
-        // objeto para o plano superior
-        plane = new THREE.Mesh(geometryPlane, material);
-        plane.side = THREE.DoubleSide;
-
-        plane.rotation.x = -Math.PI/2;
-        plane.position.y = 250;
-        plane.position.x = 0;
-        plane.position.z = 0;
-
-        // objeto para o plano inferior
-        plane2 = new THREE.Mesh(geometryPlane, material2);
-        plane2.rotation.x = -Math.PI/2;
-        plane2.position.y=-250;
-        plane2.position.x = 0;
-        plane2.position.z = 0;
-
-        var wall;
-        var wallMaterial = new THREE.MeshBasicMaterial({ map : wallTexture, side: THREE.DoubleSide });
-
-
-    // estrutura
-
-    //           _________parede1_________
-    //           |                        |
-    //           |                        |
-    //           |                        |
-    // parede4   |                        | parede2
-    //           |                        |
-    //           |            x           |
-    //           |_________parede3________|
-
-    // x é onde começa
-
-        // povoa paredes 2 e 4
-        for(var i=0; i<maze.width; i ++){
-            // parede 2
-            wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
-            wall.position.z = maze.large/2*maze.cellSize;
-            wall.position.y = 0;
-            wall.position.x = (i-maze.width/2)*maze.cellSize+maze.cellSize/2;
-            scene.add(wall);
-            wallGeometries.push(wall);
-            // parede 4
-            wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
-            wall.position.z = -maze.large/2*maze.cellSize;
-            wall.position.y = 0;
-            wall.position.x = (i-maze.width/2)*maze.cellSize+maze.cellSize/2;
-            scene.add(wall);
-            wallGeometries.push(wall);
-        }
-
-        // povoa paredes 1 e 3
-        for(var i=0; i<maze.large; i ++){
-            // parede 1
-            wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
-            wall.position.x = maze.width/2*maze.cellSize;
-            wall.rotation.y= Math.PI/2;
-            wall.position.y = 0;
-            wall.position.z = (i-maze.large/2)*maze.cellSize+maze.cellSize/2;
-            scene.add(wall);
-            wallGeometries.push(wall);
-            // parede 3
-            wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
-            wall.position.x = -maze.width/2*maze.cellSize;
-            wall.rotation.y= Math.PI/2;
-            wall.position.y = 0;
-            wall.position.z = (i-maze.large/2)*maze.cellSize+maze.cellSize/2;
-            scene.add(wall);
-            wallGeometries.push(wall);
-        }
-
-        var offsizeX=0;
-        var offsizeZ=0;
-
-        // povoa paredes intermediarias
-        for(var i = 0; i<walls.length; i++){
-            wallData = walls[i];
-            wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
-            if(wallData.orientation=='front'){
-                offsizeX=-250;
-                offsizeZ=-maze.cellSize;
-            }else if(wallData.orientation=='back'){
-                offsizeX=-250;
-                offsizeZ=0;
-            }else if(wallData.orientation=='left'){
-                offsizeX=-maze.cellSize;
-                offsizeZ=-250;
-            }else if(wallData.orientation=='right'){
-                offsizeX=0;
-                offsizeZ=-250;
+        // detecta espaço, remove a div de inicio e começa o jogo
+        function checaInicio(e) {
+            if (e.keyCode == '32') {
+                document.getElementById("inicio").remove();
+                init();
             }
-            wall.position.x = (wallData.x-maze.width/2)*maze.cellSize+offsizeX;
-            wall.rotation.y= wallData.orientation=='left'||wallData.orientation=='right'?Math.PI/2:0;
-            wall.position.y = 0;
-            wall.position.z = (wallData.z-maze.large/2)*maze.cellSize+offsizeZ;
-            scene.add(wall);
-            wallGeometries.push(wall);
         }
 
+        function init() {
 
-        scene.add(sphere);
-        scene.add(plane);
-        scene.add(plane2);
+            scene = new THREE.Scene();
 
-        //addiding some light to the scene
-        light = new THREE.AmbientLight( 0xffffff );
-        light.position.set( 0, 0, 1 ).normalize();
+            camera1 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+            camera1.position.x = (posInitial.x - maze.width / 2) * maze.cellSize;
+            camera1.position.z = (posInitial.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
 
-        scene.add(light);
+            camera2 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+            camera2.position.x = (posInitial.x - maze.width / 2) * maze.cellSize + 200;
+            camera2.position.z = (posInitial.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 200;
+            camera2.position.y += 75;
 
-        renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight*.75);
-        window.camera = camera;
-        document.body.appendChild(renderer.domElement);
-        document.addEventListener('keydown', onDocumentKeyDown, false);
+            var camera = camera1;
 
-    };
+            center = new THREE.Vector3(camera.position.x + 250, 0, 0);
 
-    var bola = 0, leitao = 0, tigrao = 0, pote = 0;
+            geometrySphere = new THREE.SphereGeometry(50, 16, 16);
+            material = new THREE.MeshBasicMaterial({ color: 0x00FF00, wireframe: true, side: THREE.DoubleSide });
+            geometryPlane = new THREE.PlaneGeometry(maze.width * maze.cellSize, maze.large * maze.cellSize);
+            geometryPlaneBasic = new THREE.PlaneGeometry(maze.cellSize, maze.cellSize, 1, 1);
 
-    function onDocumentKeyDown(e){
-        var keyCode = e.which||e.keyCode;
-        //
-        if(keyCode == 38 || keyCode == 87){
-            camera1.translateZ(-30);
-        //    camera2.translateZ(-30);
-        }
-        if(keyCode == 39 || keyCode == 68){
-            //angleX+=incrementoX*60;
-            angleX += 45 *Math.PI/180;
-        }
-        if(keyCode == 40 || keyCode == 83){
-            camera1.translateZ(30);
-         //   camera2.translateZ(30);
-        }
-        if(keyCode == 37 || keyCode == 65){
-            angleX -= 45 *Math.PI/180;
-        }
+            // carrega textura do céu
+            var texture = new THREE.TextureLoader().load('textures/blue.png', function () {
+                renderer.render(scene, camera);
+                animate();
+            });
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(maze.width, maze.large);
+            texture.needsUpdate = true;
+            material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+
+            // carrega textura do chão
+            var texture2 = new THREE.TextureLoader().load('textures/grass.png', {}, function () {
+                renderer.render(scene, camera);
+                animate();
+            });
+            texture2.wrapS = THREE.RepeatWrapping;
+            texture2.wrapT = THREE.RepeatWrapping;
+            texture2.repeat.set(maze.width, maze.large);
+            texture2.needsUpdate = true;
+            material2 = new THREE.MeshBasicMaterial({ map: texture2, side: THREE.DoubleSide });
+
+            // carrega textura das paredes
+            var wallTexture = new THREE.TextureLoader().load('textures/pedra.jpg');
+            wallTexture.wrapS = THREE.RepeatWrapping;
+            wallTexture.wrapT = THREE.RepeatWrapping;
+            wallTexture.needsUpdate = true;
+
+            var mtlPooh = new THREE.MTLLoader();
+
+            // pooh
+            mtlPooh.setPath("./objects/pooh/");
+            mtlPooh.load('Pooh.mtl', function (materials) {
+                materials.preload();
+                var objLoader = new THREE.OBJLoader();
+                objLoader.setMaterials(materials);
+                objLoader.setPath("./objects/pooh/");
+                objLoader.load('Pooh.obj', function (object) {
+                    pooh = object;
+                    pooh.position.x = (posInitial.x - maze.width / 2) * maze.cellSize;
+                    pooh.position.y = -250;
+                    pooh.position.z = (posInitial.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
+                    pooh.rotation.y = 0;
+                    pooh.scale.set(3.5, 3.5, 3.5);
+                    pooh.visible = true;
+                    scene.add(pooh);
+                });
+
+            });
+
+            var mtlPiglet = new THREE.MTLLoader();
+
+            // leitão
+            var posLeitao = { x: 8, z: 4 };
+            mtlPiglet.setPath("./objects/piglet/");
+            mtlPiglet.load('Piglet.mtl', function (materials) {
+                materials.preload();
+                var objLoader = new THREE.OBJLoader();
+                objLoader.setMaterials(materials);
+                objLoader.setPath("./objects/piglet/");
+                objLoader.load('Piglet.obj', function (object) {
+                    piglet = object;
+                    piglet.position.z = (posLeitao.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
+                    piglet.position.y = -210;
+                    piglet.position.x = (posLeitao.x - maze.width / 2) * maze.cellSize - 250;
+                    piglet.scale.set(6, 6, 6);
+                    scene.add(piglet);
+                });
+
+            });
+
+            var mtlTigger = new THREE.MTLLoader();
+
+            // tigrão
+            var posTigrao = { x: 12, z: 2 };
+            mtlTigger.setPath("./objects/tigger/");
+            mtlTigger.load('Tigger.mtl', function (materials) {
+                materials.preload();
+                var objLoader = new THREE.OBJLoader();
+                objLoader.setMaterials(materials);
+                objLoader.setPath("./objects/tigger/");
+                objLoader.load('Tigger.obj', function (object) {
+                    tigger = object;
+                    tigger.position.z = (posTigrao.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
+                    tigger.position.y = -210;
+                    tigger.position.x = (posTigrao.x - maze.width / 2) * maze.cellSize - 250;
+                    tigger.scale.set(3, 3, 3);
+                    scene.add(tigger);
+                });
+
+            });
+
+            var mtlHoney = new THREE.MTLLoader();
+
+            // pote de mel
+            var posMel = { x: 12, z: 14 };
+            var texture = new THREE.TextureLoader().load('./objects/honey.jpg');
+            var textureHoney = new THREE.MeshPhongMaterial({ map: texture });
+
+            mtlHoney.setPath("./objects/");
+            mtlHoney.load('honeyjar.mtl', function (materials) {
+                materials.preload();
+                var objLoader = new THREE.OBJLoader();
+                objLoader.setMaterials(materials);
+                objLoader.setPath("./objects/");
+                objLoader.load('honeyjar2.obj', function (object) {
+                    honey = object;
+                    honey.position.z = (posMel.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
+                    honey.position.y = -200;
+                    honey.position.x = (posMel.x - maze.width / 2) * maze.cellSize - 250;
+                    honey.scale.set(20, 20, 20);
+                    object.traverse(function (node) {
+                        if (node.isMesh)
+                            node.material = textureHoney;
+                    });
+                    scene.add(honey);
+                });
+
+            });
+
+            /*
+            var loader = new THREE.OBJLoader();
+            loader.load(
+                './objects/honeyjar2.obj',
+                function(object) {
+                    honey = object;
+                    honey.position.z = (posMel.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
+                    honey.position.y = -100;
+                    honey.position.x = (posMel.x-maze.width/2)*maze.cellSize - 250;
+                    honey.scale.set(20, 20, 20);
+    
+                    object.traverse( function(node){
+                        if ( node.isMesh )
+                            node.material = textureHoney;
+                    }) ;
+                    scene.add(honey);
+            });
+    
+            */
+
+            var mtlBee = new THREE.MTLLoader();
+
+            // abelha
+            var posAbelha = { x: 2, z: 15 };
+
+            /*
+            mtlBee.setPath("./objects/dragonfly/");
+            mtlBee.load('dragnfly.mtl', function( materials ) {
+              materials.preload();
+              var objLoader = new THREE.OBJLoader();
+              objLoader.setMaterials( materials );
+              objLoader.setPath("./objects/dragonfly/");
+              objLoader.load('dragnfly.obj', function ( object ) {
+                bee = object;
+                bee.position.z = (posAbelha.z-maze.large/2)*maze.cellSize-maze.cellSize/2 + 50;
+                bee.position.y = 0;
+                bee.position.x = (posAbelha.x-maze.width/2)*maze.cellSize - 250;
+                bee.scale.set(1000, 1000, 1000);
+                scene.add(bee);
+              } );
+    
+            } );
+            */
 
 
-        ray = new THREE.Raycaster(camera1.position, center.clone().normalize());
-        ray.far=150;
-        // se houver colisão com as paredes
-        if(ray.intersectObjects(wallGeometries).length>0){
-            if(keyCode == 38 || keyCode == 87){
-                camera1.translateZ(30);
-                camera2.translateZ(30);
+            // objeto simples para a bola
+            var posBola = { x: 1, z: 5 };
+            sphere = new THREE.Mesh(geometrySphere, new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('textures/ball_texture.png') }));
+            sphere.position.z = (posBola.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
+            sphere.position.x = (posBola.x - maze.width / 2) * maze.cellSize - 250;
+
+            // objeto para o plano superior
+            plane = new THREE.Mesh(geometryPlane, material);
+            plane.side = THREE.DoubleSide;
+
+            plane.rotation.x = -Math.PI / 2;
+            plane.position.y = 250;
+            plane.position.x = 0;
+            plane.position.z = 0;
+
+            // objeto para o plano inferior
+            plane2 = new THREE.Mesh(geometryPlane, material2);
+            plane2.rotation.x = -Math.PI / 2;
+            plane2.position.y = -250;
+            plane2.position.x = 0;
+            plane2.position.z = 0;
+
+            var wall;
+            var wallMaterial = new THREE.MeshBasicMaterial({ map: wallTexture, side: THREE.DoubleSide });
+
+
+            // estrutura
+
+            //           _________parede1_________
+            //           |                        |
+            //           |                        |
+            //           |                        |
+            // parede4   |                        | parede2
+            //           |                        |
+            //           |            x           |
+            //           |_________parede3________|
+
+            // x é onde começa
+
+            // povoa paredes 2 e 4
+            for (var i = 0; i < maze.width; i++) {
+                // parede 2
+                wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
+                wall.position.z = maze.large / 2 * maze.cellSize;
+                wall.position.y = 0;
+                wall.position.x = (i - maze.width / 2) * maze.cellSize + maze.cellSize / 2;
+                scene.add(wall);
+                wallGeometries.push(wall);
+                // parede 4
+                wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
+                wall.position.z = -maze.large / 2 * maze.cellSize;
+                wall.position.y = 0;
+                wall.position.x = (i - maze.width / 2) * maze.cellSize + maze.cellSize / 2;
+                scene.add(wall);
+                wallGeometries.push(wall);
             }
-            if(keyCode == 39 || keyCode == 68){
-                camera1.translateX(-30);
-                camera2.translateX(-30);
+
+            // povoa paredes 1 e 3
+            for (var i = 0; i < maze.large; i++) {
+                // parede 1
+                wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
+                wall.position.x = maze.width / 2 * maze.cellSize;
+                wall.rotation.y = Math.PI / 2;
+                wall.position.y = 0;
+                wall.position.z = (i - maze.large / 2) * maze.cellSize + maze.cellSize / 2;
+                scene.add(wall);
+                wallGeometries.push(wall);
+                // parede 3
+                wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
+                wall.position.x = -maze.width / 2 * maze.cellSize;
+                wall.rotation.y = Math.PI / 2;
+                wall.position.y = 0;
+                wall.position.z = (i - maze.large / 2) * maze.cellSize + maze.cellSize / 2;
+                scene.add(wall);
+                wallGeometries.push(wall);
             }
-            if(keyCode == 40 || keyCode == 83){
+
+            var offsizeX = 0;
+            var offsizeZ = 0;
+
+            // povoa paredes intermediarias
+            for (var i = 0; i < walls.length; i++) {
+                wallData = walls[i];
+                wall = new THREE.Mesh(geometryPlaneBasic, wallMaterial);
+                if (wallData.orientation == 'front') {
+                    offsizeX = -250;
+                    offsizeZ = -maze.cellSize;
+                } else if (wallData.orientation == 'back') {
+                    offsizeX = -250;
+                    offsizeZ = 0;
+                } else if (wallData.orientation == 'left') {
+                    offsizeX = -maze.cellSize;
+                    offsizeZ = -250;
+                } else if (wallData.orientation == 'right') {
+                    offsizeX = 0;
+                    offsizeZ = -250;
+                }
+                wall.position.x = (wallData.x - maze.width / 2) * maze.cellSize + offsizeX;
+                wall.rotation.y = wallData.orientation == 'left' || wallData.orientation == 'right' ? Math.PI / 2 : 0;
+                wall.position.y = 0;
+                wall.position.z = (wallData.z - maze.large / 2) * maze.cellSize + offsizeZ;
+                scene.add(wall);
+                wallGeometries.push(wall);
+            }
+
+
+            scene.add(sphere);
+            scene.add(plane);
+            scene.add(plane2);
+
+            //addiding some light to the scene
+            light = new THREE.AmbientLight(0xffffff);
+            light.position.set(0, 0, 1).normalize();
+
+            scene.add(light);
+
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight * .75);
+            window.camera = camera;
+            document.body.appendChild(renderer.domElement);
+            document.addEventListener('keydown', onDocumentKeyDown, false);
+
+        };
+
+        var bola = 0, leitao = 0, tigrao = 0, pote = 0;
+
+        function onDocumentKeyDown(e) {
+            var keyCode = e.which || e.keyCode;
+            //
+            if (keyCode == 38 || keyCode == 87) {
                 camera1.translateZ(-30);
-                camera2.translateZ(-30);
+                //    camera2.translateZ(-30);
             }
-            if(keyCode == 37 || keyCode == 65){
-                camera1.translateX(30);
-                camera2.translateX(30);
+            if (keyCode == 39 || keyCode == 68) {
+                //angleX+=incrementoX*60;
+                angleX += 45 * Math.PI / 180;
             }
-        }else{
-            angleY+=incrementoY;
-            center.y = 400*Math.sin(angleY*80);
-        }
+            if (keyCode == 40 || keyCode == 83) {
+                camera1.translateZ(30);
+                //   camera2.translateZ(30);
+            }
+            if (keyCode == 37 || keyCode == 65) {
+                angleX -= 45 * Math.PI / 180;
+            }
 
 
-    	var poscam = camera1.position;
-        // se houver colisão com os objetos
-       	if(!leitao){
-      		var posleitao = piglet.getWorldPosition();
-	        if(((poscam.x - posleitao.x) * (poscam.x - posleitao.x) + (poscam.z - posleitao.z) * (poscam.z - posleitao.z)) < 10000){
-	            leitao = 1;
-	            scene.remove(piglet);
-	            document.getElementById('piglet').setAttribute('style','text-decoration:line-through;color:orange');
-	        }
-	    }
-
-	    if(!bola){
-	    	var posbola = sphere.getWorldPosition();
-	        if(((poscam.x - posbola.x) * (poscam.x - posbola.x) + (poscam.z - posbola.z) * (poscam.z - posbola.z)) < 10000){
-	            bola = 1;
-	            scene.remove(sphere);
-	            document.getElementById('ball').setAttribute('style','text-decoration:line-through;color:orange');
-	        }
-	    }
-
-	    if(!tigrao){
-	    	var postigrao = tigger.getWorldPosition();
-	        if(((poscam.x - postigrao.x) * (poscam.x - postigrao.x) + (poscam.z - postigrao.z) * (poscam.z - postigrao.z)) < 10000){
-	            tigrao = 1;
-	            scene.remove(tigger);
-	            document.getElementById('tigger').setAttribute('style','text-decoration:line-through;color:orange');
-	        }
-	    }
-
-		if(!pote){
-	    	var pospote = honey.getWorldPosition();
-	        if(((poscam.x - pospote.x) * (poscam.x - pospote.x) + (poscam.z - pospote.z) * (poscam.z - pospote.z)) < 10000){
-	            pote = 1;
-	            scene.remove(honey);
-	            document.getElementById('honey').setAttribute('style','text-decoration:line-through;color:orange');
-	        }
-	    }
+            ray = new THREE.Raycaster(camera1.position, center.clone().normalize());
+            ray.far = 150;
+            // se houver colisão com as paredes
+            if (ray.intersectObjects(wallGeometries).length > 0) {
+                if (keyCode == 38 || keyCode == 87) {
+                    camera1.translateZ(30);
+                    camera2.translateZ(30);
+                }
+                if (keyCode == 39 || keyCode == 68) {
+                    camera1.translateX(-30);
+                    camera2.translateX(-30);
+                }
+                if (keyCode == 40 || keyCode == 83) {
+                    camera1.translateZ(-30);
+                    camera2.translateZ(-30);
+                }
+                if (keyCode == 37 || keyCode == 65) {
+                    camera1.translateX(30);
+                    camera2.translateX(30);
+                }
+            } else {
+                angleY += incrementoY;
+                center.y = 400 * Math.sin(angleY * 80);
+            }
 
 
-        // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
-        if(bola && leitao && tigrao && pote){
-          document.getElementById("fim").style.display = 'block';
-          cancelAnimationFrame(id);
-          while(scene.children.length > 0){
-            scene.remove(scene.children[0]);
-          }
-        }
+            var poscam = camera1.position;
+            // se houver colisão com os objetos
+            if (!leitao) {
+                var posleitao = piglet.getWorldPosition();
+                if (((poscam.x - posleitao.x) * (poscam.x - posleitao.x) + (poscam.z - posleitao.z) * (poscam.z - posleitao.z)) < 10000) {
+                    leitao = 1;
+                    scene.remove(piglet);
+                    document.getElementById('piglet').setAttribute('style', 'text-decoration:line-through;color:orange');
+                }
+            }
 
-//        camera2.position.x = camera1.position.x + 100;
-//        camera2.position.z = camera1.position.z + 100;
+            if (!bola) {
+                var posbola = sphere.getWorldPosition();
+                if (((poscam.x - posbola.x) * (poscam.x - posbola.x) + (poscam.z - posbola.z) * (poscam.z - posbola.z)) < 10000) {
+                    bola = 1;
+                    scene.remove(sphere);
+                    document.getElementById('ball').setAttribute('style', 'text-decoration:line-through;color:orange');
+                }
+            }
 
-        if(keyCode == 70){
-        	if(camcontrol == 0){
-        		camera = camera2;
-        		pooh.visible = true;
-        		camcontrol = 1;
-        	}
-        	else{
-        		camera = camera1;
-        		pooh.visible = false;
-        		camcontrol = 0;
-        	}
-        }
-    };
+            if (!tigrao) {
+                var postigrao = tigger.getWorldPosition();
+                if (((poscam.x - postigrao.x) * (poscam.x - postigrao.x) + (poscam.z - postigrao.z) * (poscam.z - postigrao.z)) < 10000) {
+                    tigrao = 1;
+                    scene.remove(tigger);
+                    document.getElementById('tigger').setAttribute('style', 'text-decoration:line-through;color:orange');
+                }
+            }
 
-
-    function animate() {
-
-        //pontos de controle bezier
-		var x0 = 2.7, y0 = 5.46, x1 = 7.56, y1 = 18.9, x2 = 13.3, y2 = -3.15, x3 = 23.33, y3 = 9.45;
-
-        center.x = windowHalfX*32*Math.cos(angleX);
-        center.z = windowHalfX*32*Math.sin(angleX);
-
-        id = requestAnimationFrame(animate);
-
-        piglet.rotation.y += 0.01;
-        sphere.rotation.x -= 0.01;
-        tigger.rotation.y += 0.01;
-    	honey.rotation.y += 0.02;
-
-    	pooh.position.copy( camera1.position );
-    	pooh.position.y = -250;
-		pooh.lookAt(center);		
-    	pooh.updateMatrix();
-    //	pooh.translateZ( -100 );
-
-		//Bezier da abelha
-
-        //PS se a abelha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
-        //t = Math.abs(Math.sin((Math.floor(Date.now()/10)%360 * Math.PI / 180.0)))
-
- 		  //bee.position.x = (1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3));
-     	//bee.position.y = (1-t)*((1-t)*((1-t)*y0+t*y1)+t*((1-t)*y1+t*y2))+t*((1-t)*((1-t)*y1+t*y2)+t*((1-t)*y2+t*y3));
+            if (!pote) {
+                var pospote = honey.getWorldPosition();
+                if (((poscam.x - pospote.x) * (poscam.x - pospote.x) + (poscam.z - pospote.z) * (poscam.z - pospote.z)) < 10000) {
+                    pote = 1;
+                    scene.remove(honey);
+                    document.getElementById('honey').setAttribute('style', 'text-decoration:line-through;color:orange');
+                }
+            }
 
 
-     	var relativeCameraOffset = new THREE.Vector3(0, 100, -75);
-     	var cameraOffset = relativeCameraOffset.applyMatrix4(pooh.matrixWorld);
+            // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
+            if (bola && leitao && tigrao && pote) {
+                document.getElementById("fim").style.display = 'block';
+                cancelAnimationFrame(id);
+                while (scene.children.length > 0) {
+                    scene.remove(scene.children[0]);
+                }
+            }
 
-     	camera2.position.x = cameraOffset.x;
-     	camera2.position.z = cameraOffset.z;
+            //        camera2.position.x = camera1.position.x + 100;
+            //        camera2.position.z = camera1.position.z + 100;
 
-     	var control = 0;
-        ray2 = new THREE.Raycaster(camera2.position, center.clone().normalize());
-        ray2.far=300;
-        // se houver colisão com as paredes
-        if(ray2.intersectObjects(wallGeometries).length>0){
-        	camera = camera1;
-        	pooh.visible = false;
-        }
-        else if(camcontrol == 1 && camera == camera1){
-        	camera = camera2;
-        	pooh.visible = true;
-        }
+            if (keyCode == 70) {
+                if (camcontrol == 0) {
+                    camera = camera2;
+                    pooh.visible = true;
+                    camcontrol = 1;
+                }
+                else {
+                    camera = camera1;
+                    pooh.visible = false;
+                    camcontrol = 0;
+                }
+            }
+        };
 
-        camera1.lookAt(center);
-        camera2.lookAt(center);
-        renderer.render(scene, camera);
-    };
+
+        function animate() {
+
+            //pontos de controle bezier
+            var x0 = 2.7, y0 = 5.46, x1 = 7.56, y1 = 18.9, x2 = 13.3, y2 = -3.15, x3 = 23.33, y3 = 9.45;
+
+            center.x = windowHalfX * 32 * Math.cos(angleX);
+            center.z = windowHalfX * 32 * Math.sin(angleX);
+
+            id = requestAnimationFrame(animate);
+
+            piglet.rotation.y += 0.01;
+            sphere.rotation.x -= 0.01;
+            tigger.rotation.y += 0.01;
+            honey.rotation.y += 0.02;
+
+            pooh.position.copy(camera1.position);
+            pooh.position.y = -250;
+            pooh.lookAt(center);
+            pooh.updateMatrix();
+            //	pooh.translateZ( -100 );
+
+            //Bezier da abelha
+
+            //PS se a abelha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
+            //t = Math.abs(Math.sin((Math.floor(Date.now()/10)%360 * Math.PI / 180.0)))
+
+            //bee.position.x = (1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3));
+            //bee.position.y = (1-t)*((1-t)*((1-t)*y0+t*y1)+t*((1-t)*y1+t*y2))+t*((1-t)*((1-t)*y1+t*y2)+t*((1-t)*y2+t*y3));
+
+
+            var relativeCameraOffset = new THREE.Vector3(0, 100, -75);
+            var cameraOffset = relativeCameraOffset.applyMatrix4(pooh.matrixWorld);
+
+            camera2.position.x = cameraOffset.x;
+            camera2.position.z = cameraOffset.z;
+
+            var control = 0;
+            ray2 = new THREE.Raycaster(camera2.position, center.clone().normalize());
+            ray2.far = 300;
+            // se houver colisão com as paredes
+            if (ray2.intersectObjects(wallGeometries).length > 0) {
+                camera = camera1;
+                pooh.visible = false;
+            }
+            else if (camcontrol == 1 && camera == camera1) {
+                camera = camera2;
+                pooh.visible = true;
+            }
+
+            camera1.lookAt(center);
+            camera2.lookAt(center);
+            renderer.render(scene, camera);
+        };
 
     </script>
 </body>
+
 </html>
