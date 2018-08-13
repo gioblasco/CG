@@ -398,14 +398,15 @@
         //    camera2.translateZ(-30);
         }
         if(keyCode == 39 || keyCode == 68){
-            angleX+=incrementoX*60;
+            //angleX+=incrementoX*60;
+            angleX += 45 *Math.PI/180;
         }
         if(keyCode == 40 || keyCode == 83){
             camera1.translateZ(30);
          //   camera2.translateZ(30);
         }
         if(keyCode == 37 || keyCode == 65){
-            angleX-=incrementoX*60;
+            angleX -= 45 *Math.PI/180;
         }
 
 
