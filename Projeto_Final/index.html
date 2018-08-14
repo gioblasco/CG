@@ -102,7 +102,7 @@
             center = new THREE.Vector3(camera.position.x + 250, 0, 0);
 
             geometrySphere = new THREE.SphereGeometry(50, 16, 16);
-            material = new THREE.MeshBasicMaterial({ color: 0x00FF00, wireframe: true, side: THREE.DoubleSide });
+            material = new THREE.MeshPhongMaterial({ color: 0x00FF00, wireframe: true, side: THREE.DoubleSide });
             geometryPlane = new THREE.PlaneGeometry(maze.width * maze.cellSize, maze.large * maze.cellSize);
             geometryPlaneBasic = new THREE.PlaneGeometry(maze.cellSize, maze.cellSize, 1, 1);
 
@@ -236,14 +236,14 @@
                     honey.position.y = -100;
                     honey.position.x = (posMel.x-maze.width/2)*maze.cellSize - 250;
                     honey.scale.set(20, 20, 20);
-    
+
                     object.traverse( function(node){
                         if ( node.isMesh )
                             node.material = textureHoney;
                     }) ;
                     scene.add(honey);
             });
-    
+
             */
 
             var mtlBee = new THREE.MTLLoader();
@@ -266,14 +266,14 @@
                 bee.scale.set(1000, 1000, 1000);
                 scene.add(bee);
               } );
-    
+
             } );
             */
 
 
             // objeto simples para a bola
             var posBola = { x: 1, z: 5 };
-            sphere = new THREE.Mesh(geometrySphere, new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load('textures/ball_texture.png') }));
+            sphere = new THREE.Mesh(geometrySphere, new THREE.MeshPhongMaterial({ map: new THREE.TextureLoader().load('textures/ball_texture.png') }));
             sphere.position.z = (posBola.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
             sphere.position.x = (posBola.x - maze.width / 2) * maze.cellSize - 250;
 
@@ -294,7 +294,7 @@
             plane2.position.z = 0;
 
             var wall;
-            var wallMaterial = new THREE.MeshBasicMaterial({ map: wallTexture, side: THREE.DoubleSide });
+            var wallMaterial = new THREE.MeshPhongMaterial({ map: wallTexture, side: THREE.DoubleSide });
 
 
             // estrutura
