@@ -58,6 +58,11 @@
         var mixers = [];
         var clock = new THREE.Clock();
 
+        var back = new Audio('./sounds/background.ogg');
+        back.loop = true;
+
+        var win = new Audio('./sounds/win.ogg');
+
         var take = new Audio('./sounds/sparkle.ogg');
 
         // var mouseX = 0,
@@ -87,6 +92,7 @@
         function checaInicio(e) {
             if (e.keyCode == '32') {
                 document.getElementById("inicio").remove();
+                back.play();
                 init();
             }
         }
@@ -105,22 +111,6 @@
             camera2.position.y += 100;
 
             var camera = camera1;
-
-            // create an AudioListener and add it to the camera
-            var listener = new THREE.AudioListener();
-            camera.add(listener);
-
-            // create a global audio source
-            var sound = new THREE.Audio( listener );
-
-            // load a sound and set it as the Audio object's buffer
-            var audioLoader = new THREE.AudioLoader();
-            audioLoader.load( './sounds/background.ogg', function( buffer ) {
-              sound.setBuffer( buffer );
-              sound.setLoop( true );
-              sound.setVolume( 0.5 );
-              sound.play();
-            });
 
             center = new THREE.Vector3(camera.position.x + 250, 0, 0);
 
@@ -449,55 +439,53 @@
             if (!leitao) {
                 var posleitao = piglet.getWorldPosition();
                 if (((poscam.x - posleitao.x) * (poscam.x - posleitao.x) + (poscam.z - posleitao.z) * (poscam.z - posleitao.z)) < 10000) {
-                    leitao = 1;
                     take.play();
                     scene.remove(piglet);
                     document.getElementById('piglet').setAttribute('style', 'text-decoration:line-through;color:orange');
+                    leitao = 1;
                 }
             }
 
             if (!bola) {
                 var posbola = sphere.getWorldPosition();
                 if (((poscam.x - posbola.x) * (poscam.x - posbola.x) + (poscam.z - posbola.z) * (poscam.z - posbola.z)) < 10000) {
-                    bola = 1;
                     take.play();
                     scene.remove(sphere);
                     document.getElementById('ball').setAttribute('style', 'text-decoration:line-through;color:orange');
+                    bola = 1;
                 }
             }
 
             if (!tigrao) {
                 var postigrao = tigger.getWorldPosition();
                 if (((poscam.x - postigrao.x) * (poscam.x - postigrao.x) + (poscam.z - postigrao.z) * (poscam.z - postigrao.z)) < 10000) {
-                    tigrao = 1;
                     take.play();
                     scene.remove(tigger);
                     document.getElementById('tigger').setAttribute('style', 'text-decoration:line-through;color:orange');
+                    tigrao = 1;
                 }
             }
 
             if (!pote) {
                 var pospote = honey.getWorldPosition();
                 if (((poscam.x - pospote.x) * (poscam.x - pospote.x) + (poscam.z - pospote.z) * (poscam.z - pospote.z)) < 10000) {
-                    pote = 1;
                     take.play();
                     scene.remove(honey);
                     document.getElementById('honey').setAttribute('style', 'text-decoration:line-through;color:orange');
+                    pote = 1;
                 }
             }
 
 
             // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
-            if (bola && leitao && tigrao && pote) {
+            // if (bola && leitao && tigrao && pote) {
+            if (bola) {
                 document.getElementById("fim").style.display = 'block';
                 cancelAnimationFrame(id);
-                while (scene.children.length > 0) {
-                    scene.remove(scene.children[0]);
-                }
+                back.pause();
+                win.play();
+                scene.remove.apply(scene.children);
             }
-
-            //        camera2.position.x = camera1.position.x + 100;
-            //        camera2.position.z = camera1.position.z + 100;
 
             if (keyCode == 70) {
                 if (camcontrol == 0) {
