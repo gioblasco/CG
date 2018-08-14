@@ -42,6 +42,7 @@
     <script src="../three/three.js"></script>
     <script src="../three/OBJLoader.js"></script>
     <script src="../three/MTLLoader.js"></script>
+    <script src="../three/inflate.min.js"></script>
     <script src="../three/FBXLoader.js"></script>
     <script src="walls.js"></script>
 
@@ -53,6 +54,9 @@
 
         var camera, scene, renderer, geometry, material, piglet, tigger, honey, bee, pooh, sphere, light, plane,
             plane2, center, id;
+
+        var mixers = [];
+        var clock = new THREE.Clock();
 
         // var mouseX = 0,
         //     mouseY = 0,
@@ -227,6 +231,29 @@
             // abelha
             var posAbelha = { x: 2, z: 15 };
 
+            var loader = new THREE.FBXLoader();
+    				loader.load( './objects/chicken/gallina.fbx', function( object ) {
+              chicken = object;
+              chicken.position.z = (posAbelha.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
+              chicken.position.y = -250;
+              chicken.position.x = (posAbelha.x - maze.width / 2) * maze.cellSize - 250;
+              chicken.rotation.y = Math.PI;
+
+              chicken.mixer = new THREE.AnimationMixer( chicken );
+    					mixers.push( chicken.mixer );
+              if (mixers.length > 0) {
+      					for (var i = 0; i < chicken.animations.length; i ++) {
+    					         chicken.mixer.clipAction(chicken.animations[i]).play();
+                }
+              }
+    					chicken.traverse( function ( child ) {
+    						if ( child.isMesh ) {
+    							child.castShadow = true;
+    							child.receiveShadow = true;
+    						}
+    					} );
+              scene.add(chicken);
+    				} );
 
             // objeto simples para a bola
             var posBola = { x: 1, z: 5 };
@@ -464,6 +491,24 @@
             }
         };
 
+        function rotateAboutPoint(obj, point, axis, theta, pointIsWorld){
+        	pointIsWorld = (pointIsWorld === undefined)? false : pointIsWorld;
+
+        	if(pointIsWorld){
+        		obj.parent.localToWorld(obj.position); // compensate for world coordinate
+        	}
+
+        	obj.position.sub(point); // remove the offset
+        	obj.position.applyAxisAngle(axis, theta); // rotate the POSITION
+        	obj.position.add(point); // re-add the offset
+
+        	if(pointIsWorld){
+        		obj.parent.worldToLocal(obj.position); // undo world coordinates compensation
+        	}
+
+        	obj.rotateOnAxis(axis, theta); // rotate the OBJECT
+        }
+
 
         function animate() {
 
@@ -484,6 +529,16 @@
             pooh.position.y = -250;
             pooh.lookAt(center);
             pooh.updateMatrix();
+
+            if ( mixers.length > 0 ) {
+    					for ( var i = 0; i < mixers.length; i ++ ) {
+    						mixers[i].update(clock.getDelta());
+    					}
+    				}
+
+            var chickenX = (2 - maze.width / 2) * maze.cellSize;
+            var chickenY = (14 - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
+            //rotacionar esse negocio
 
             //Bezier da abelha
 
