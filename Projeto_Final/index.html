@@ -126,7 +126,7 @@
             texture2.wrapT = THREE.RepeatWrapping;
             texture2.repeat.set(maze.width, maze.large);
             texture2.needsUpdate = true;
-            material2 = new THREE.MeshBasicMaterial({ map: texture2, side: THREE.DoubleSide });
+            material2 = new THREE.MeshPhongMaterial({ map: texture2, side: THREE.DoubleSide });
 
             // carrega textura das paredes
             var wallTexture = new THREE.TextureLoader().load('textures/pedra.jpg');
