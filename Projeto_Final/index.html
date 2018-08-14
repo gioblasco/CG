@@ -35,7 +35,7 @@
         </h3>
     </div>
 
-    <div id="fim" style="margin-top: 20em; color:lightblue">
+    <div id="fim" style="margin-top: 20em; margin-bottom: 40em; color:lightblue">
         <h1> Parabéns! Você ajudou o Pooh a achar tudo o que ele queria e agora ele está muito feliz! </h1>
     </div>
 
@@ -483,8 +483,7 @@
                 document.getElementById("fim").style.display = 'block';
                 cancelAnimationFrame(id);
                 back.pause();
-                win.play();
-                scene.remove.apply(scene.children);
+                win.play()
             }
 
             if (keyCode == 70) {
@@ -500,7 +499,6 @@
                 }
             }
         };
-
 
         function animate() {
 
