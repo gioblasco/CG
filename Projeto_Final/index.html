@@ -243,8 +243,10 @@
     				loader.load( './objects/chicken/gallina.fbx', function( object ) {
               chicken = object;
               chicken.position.z = (posAbelha.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
+              chicken.position.zo = chicken.position.z; // o stands for original
               chicken.position.y = -250;
               chicken.position.x = (posAbelha.x - maze.width / 2) * maze.cellSize - 250;
+              chicken.position.xo = chicken.position.x; // o stands for original
               chicken.rotation.y = Math.PI;
 
               chicken.mixer = new THREE.AnimationMixer( chicken );
@@ -529,13 +531,13 @@
             var chickenY = (14 - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
             //rotacionar esse negocio
 
-            //Bezier da abelha
+            //Bezier da galinha
 
-            //PS se a abelha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
-            //t = Math.abs(Math.sin((Math.floor(Date.now()/10)%360 * Math.PI / 180.0)))
+            //PS se a galinha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
+            t = Math.abs(Math.sin((Math.floor(Date.now()/10)%360 * Math.PI / 180.0)))
 
-            //bee.position.x = (1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3));
-            //bee.position.y = (1-t)*((1-t)*((1-t)*y0+t*y1)+t*((1-t)*y1+t*y2))+t*((1-t)*((1-t)*y1+t*y2)+t*((1-t)*y2+t*y3));
+            chicken.position.x = chicken.position.xo + 2 *  ((1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3)));
+            chicken.position.z = chicken.position.zo + 4 * ((1-t)*((1-t)*((1-t)*y0+t*y1)+t*((1-t)*y1+t*y2))+t*((1-t)*((1-t)*y1+t*y2)+t*((1-t)*y2+t*y3)));
 
 
             var relativeCameraOffset = new THREE.Vector3(0, 100, -75);
