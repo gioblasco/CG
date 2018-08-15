@@ -31,7 +31,9 @@
 
     <div id="inicio" style="margin-top: 20em; color:lightblue">
         <h3>
-            <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla Espaço</span>
+            <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla
+                Espaço
+            </span>
         </h3>
     </div>
 
@@ -240,28 +242,30 @@
             var posAbelha = { x: 2, z: 15 };
 
             var loader = new THREE.FBXLoader();
-    				loader.load( './objects/chicken/gallina.fbx', function( object ) {
-              chicken = object;
-              chicken.position.z = (posAbelha.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
-              chicken.position.y = -250;
-              chicken.position.x = (posAbelha.x - maze.width / 2) * maze.cellSize - 250;
-              chicken.rotation.y = Math.PI;
+            loader.load('./objects/chicken/gallina.fbx', function (object) {
+                chicken = object;
+                chicken.position.z = (posAbelha.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
+                chicken.position.zo = chicken.position.z; // o stands for original
+                chicken.position.y = -250;
+                chicken.position.x = (posAbelha.x - maze.width / 2) * maze.cellSize - 250;
+                chicken.position.xo = chicken.position.x; // o stands for original
+                chicken.rotation.y = Math.PI;
 
-              chicken.mixer = new THREE.AnimationMixer( chicken );
-    					mixers.push( chicken.mixer );
-              if (mixers.length > 0) {
-      					for (var i = 0; i < chicken.animations.length; i ++) {
-    					         chicken.mixer.clipAction(chicken.animations[i]).play();
+                chicken.mixer = new THREE.AnimationMixer(chicken);
+                mixers.push(chicken.mixer);
+                if (mixers.length > 0) {
+                    for (var i = 0; i < chicken.animations.length; i++) {
+                        chicken.mixer.clipAction(chicken.animations[i]).play();
+                    }
                 }
-              }
-    					chicken.traverse( function ( child ) {
-    						if ( child.isMesh ) {
-    							child.castShadow = true;
-    							child.receiveShadow = true;
-    						}
-    					} );
-              scene.add(chicken);
-    				} );
+                chicken.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+                scene.add(chicken);
+            });
 
             // objeto simples para a bola
             var posBola = { x: 1, z: 5 };
@@ -381,111 +385,68 @@
             renderer.setSize(window.innerWidth, window.innerHeight * .75);
             window.camera = camera;
             document.body.appendChild(renderer.domElement);
-            document.addEventListener('keydown', onDocumentKeyDown, false);
+
 
         };
 
         var bola = 0, leitao = 0, tigrao = 0, pote = 0;
+        var Key = {
+            _pressed: {},
 
-        function onDocumentKeyDown(e) {
-            var keyCode = e.which || e.keyCode;
-            //
-            if (keyCode == 38 || keyCode == 87) {
-                camera1.translateZ(-10);
-                //    camera2.translateZ(-30);
-            }
-            if (keyCode == 39 || keyCode == 68) {
-                angleX += Math.PI / 4;
-            }
-            if (keyCode == 40 || keyCode == 83) {
-                camera1.translateZ(10);
-                //   camera2.translateZ(30);
-            }
-            if (keyCode == 37 || keyCode == 65) {
-                angleX -= Math.PI / 4;
-            }
+            LEFT: 37,
+            UP: 38,
+            RIGHT: 39,
+            DOWN: 40,
+            W: 87,
+            S: 83,
+            A: 65,
+            D: 68,
+            F: 70,
+            SHIFT: 16,
 
+            isDown: function (keyCode) {
+                return this._pressed[keyCode];
+            },
 
-            ray = new THREE.Raycaster(camera1.position, center.clone().normalize());
-            ray.far = 200;
-            // se houver colisão com as paredes
-            if (ray.intersectObjects(wallGeometries).length > 0) {
-                if (keyCode == 38 || keyCode == 87) {
-                    camera1.translateZ(30);
-                    camera2.translateZ(30);
-                }
-                if (keyCode == 39 || keyCode == 68) {
-                    camera1.translateX(-30);
-                    camera2.translateX(-30);
-                }
-                if (keyCode == 40 || keyCode == 83) {
+            onKeydown: function (event) {
+                this._pressed[event.keyCode] = true;
+            },
+
+            onKeyup: function (event) {
+                delete this._pressed[event.keyCode];
+            }
+        };
+
+        window.addEventListener('keyup', function (event) { Key.onKeyup(event); }, false);
+        window.addEventListener('keydown', function (event) { Key.onKeydown(event); }, false);
+
+        function walk() {
+            /*  ATENÇÃO, ESSAS LINHAS ESTAVAM COMENTADAS, NÃO SEI SE SÃO IMPORTANTE
+             //        camera2.position.x = camera1.position.x + 100;
+             //        camera2.position.z = camera1.position.z + 100;
+            */
+
+            if (Key.isDown(Key.UP) || Key.isDown(Key.W)) {
+                if (Key.isDown(Key.SHIFT))
                     camera1.translateZ(-30);
-                    camera2.translateZ(-30);
-                }
-                if (keyCode == 37 || keyCode == 65) {
-                    camera1.translateX(30);
-                    camera2.translateX(30);
-                }
+                else
+                    camera1.translateZ(-10);
             }
 
-            // else {
-            //     //angleY += incrementoY;
-            //     //center.y = Math.sin(angleY * 80);
-            // }
-
-
-            var poscam = camera1.position;
-            // se houver colisão com os objetos
-            if (!leitao) {
-                var posleitao = piglet.getWorldPosition();
-                if (((poscam.x - posleitao.x) * (poscam.x - posleitao.x) + (poscam.z - posleitao.z) * (poscam.z - posleitao.z)) < 10000) {
-                    take.play();
-                    scene.remove(piglet);
-                    document.getElementById('piglet').setAttribute('style', 'text-decoration:line-through;color:orange');
-                    leitao = 1;
-                }
+            if (Key.isDown(Key.RIGHT) || Key.isDown(Key.D)) {
+                angleX += incrementoX * 45;
             }
-
-            if (!bola) {
-                var posbola = sphere.getWorldPosition();
-                if (((poscam.x - posbola.x) * (poscam.x - posbola.x) + (poscam.z - posbola.z) * (poscam.z - posbola.z)) < 10000) {
-                    take.play();
-                    scene.remove(sphere);
-                    document.getElementById('ball').setAttribute('style', 'text-decoration:line-through;color:orange');
-                    bola = 1;
-                }
+            if (Key.isDown(Key.DOWN) || Key.isDown(Key.S)) {
+                if (Key.isDown(Key.SHIFT))
+                    camera1.translateZ(30);
+                else
+                    camera1.translateZ(10);
             }
-
-            if (!tigrao) {
-                var postigrao = tigger.getWorldPosition();
-                if (((poscam.x - postigrao.x) * (poscam.x - postigrao.x) + (poscam.z - postigrao.z) * (poscam.z - postigrao.z)) < 10000) {
-                    take.play();
-                    scene.remove(tigger);
-                    document.getElementById('tigger').setAttribute('style', 'text-decoration:line-through;color:orange');
-                    tigrao = 1;
-                }
+            if (Key.isDown(Key.LEFT) || Key.isDown(Key.A)) {
+                angleX -= incrementoX * 45;
             }
-
-            if (!pote) {
-                var pospote = honey.getWorldPosition();
-                if (((poscam.x - pospote.x) * (poscam.x - pospote.x) + (poscam.z - pospote.z) * (poscam.z - pospote.z)) < 10000) {
-                    take.play();
-                    scene.remove(honey);
-                    document.getElementById('honey').setAttribute('style', 'text-decoration:line-through;color:orange');
-                    pote = 1;
-                }
-            }
-
-
-            // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
-            if (bola && leitao && tigrao && pote) {
-                document.getElementById("fim").style.display = 'block';
-                cancelAnimationFrame(id);
-                back.pause();
-                win.play()
-            }
-
-            if (keyCode == 70) {
+            if (Key.isDown(Key.F)) {
+                Key._pressed[70] = false;
                 if (camcontrol == 0) {
                     camera = camera2;
                     pooh.visible = true;
@@ -497,12 +458,15 @@
                     camcontrol = 0;
                 }
             }
-        };
+
+
+        }
+
 
         function animate() {
 
+            walk();
             //pontos de controle bezier
-            var x0 = 2.7, y0 = 5.46, x1 = 7.56, y1 = 18.9, x2 = 13.3, y2 = -3.15, x3 = 23.33, y3 = 9.45;
 
             center.x = windowHalfX * 100 * Math.cos(angleX);
             center.z = windowHalfX * 100 * Math.sin(angleX);
@@ -519,11 +483,11 @@
             pooh.lookAt(center);
             pooh.updateMatrix();
 
-            if ( mixers.length > 0 ) {
-    					for ( var i = 0; i < mixers.length; i ++ ) {
-    						mixers[i].update(clock.getDelta());
-    					}
-    				}
+            if (mixers.length > 0) {
+                for (var i = 0; i < mixers.length; i++) {
+                    mixers[i].update(clock.getDelta());
+                }
+            }
 
             var chickenX = (2 - maze.width / 2) * maze.cellSize;
             var chickenY = (14 - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
@@ -532,10 +496,11 @@
             //Bezier da abelha
 
             //PS se a abelha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
-            //t = Math.abs(Math.sin((Math.floor(Date.now()/10)%360 * Math.PI / 180.0)))
+            t = Math.abs(Math.sin((Math.floor(Date.now() / 10) % 360 * Math.PI / 180.0)))
+            var x0 = 2.7, y0 = 5.46, x1 = 7.56, y1 = 18.9, x2 = 13.3, y2 = -3.15, x3 = 23.33, y3 = 9.45;
 
-            //bee.position.x = (1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3));
-            //bee.position.y = (1-t)*((1-t)*((1-t)*y0+t*y1)+t*((1-t)*y1+t*y2))+t*((1-t)*((1-t)*y1+t*y2)+t*((1-t)*y2+t*y3));
+            chicken.position.x = chicken.position.xo + 2 * ((1 - t) * ((1 - t) * ((1 - t) * x0 + t * x1) + t * ((1 - t) * x1 + t * x2)) + t * ((1 - t) * ((1 - t) * x1 + t * x2) + t * ((1 - t) * x2 + t * x3)));
+            chicken.position.z = chicken.position.zo + 4 * ((1 - t) * ((1 - t) * ((1 - t) * y0 + t * y1) + t * ((1 - t) * y1 + t * y2)) + t * ((1 - t) * ((1 - t) * y1 + t * y2) + t * ((1 - t) * y2 + t * y3)));
 
 
             var relativeCameraOffset = new THREE.Vector3(0, 100, -75);
@@ -555,6 +520,47 @@
             else if (camcontrol == 1 && camera == camera1) {
                 camera = camera2;
                 pooh.visible = true;
+            }
+
+            var ray = new THREE.Raycaster(camera1.position, center.clone().normalize());
+            ray.far = 150;
+            if (ray.intersectObjects(wallGeometries).length > 0) { // Se encostou numa parede, rebobine
+                if (Key.isDown(Key.UP) || Key.isDown(Key.W)) {
+                    if (Key.isDown(Key.SHIFT)) {
+                        camera1.translateZ(30);
+                    }
+                    else {
+                        camera1.translateZ(10);
+
+                    }
+                }
+                if (Key.isDown(Key.RIGHT) || Key.isDown(Key.D)) {
+                    camera1.translateX(-30);
+                }
+                if (Key.isDown(Key.DOWN) || Key.isDown(Key.S)) {
+                    if (Key.isDown(Key.SHIFT)) {
+                        camera1.translateZ(-30);
+                    }
+                    else {
+                        camera1.translateZ(-10);
+                    }
+                }
+                if (Key.isDown(Key.LEFT) || Key.isDown(Key.A)) {
+                    camera1.translateX(30);
+                }
+
+            }
+            else {
+                if (Key.isDown(Key.UP) || Key.isDown(Key.W) || Key.isDown(Key.DOWN) || Key.isDown(Key.S)) // se não balance a cabeça
+                {
+                    angleY += incrementoY;
+                    if (Key.isDown(Key.SHIFT)) {
+                    center.y = 800 * Math.sin(angleY * 80);
+                    }
+                    else{
+                        center.y = 400 * Math.sin(angleY * 80);
+                    }
+                }
             }
 
             camera1.lookAt(center);
