@@ -65,6 +65,8 @@
 
         var take = new Audio('./sounds/sparkle.ogg');
 
+        var chickensound = new Audio('./sounds/chicken.mp3');
+
         // var mouseX = 0,
         //     mouseY = 0,
         //     mouseZ = 0;
@@ -237,17 +239,17 @@
             var mtlBee = new THREE.MTLLoader();
 
             // abelha
-            var posAbelha = { x: 2, z: 15 };
+            var posAbelha = { x: 4, z: 14 };
 
             var loader = new THREE.FBXLoader();
     				loader.load( './objects/chicken/gallina.fbx', function( object ) {
               chicken = object;
-              chicken.position.z = (posAbelha.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
+              chicken.position.z = (posAbelha.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
               chicken.position.zo = chicken.position.z; // o stands for original
               chicken.position.y = -250;
-              chicken.position.x = (posAbelha.x - maze.width / 2) * maze.cellSize - 250;
+              chicken.position.x = (posAbelha.x - maze.width / 2) * maze.cellSize - 200;
               chicken.position.xo = chicken.position.x; // o stands for original
-              chicken.rotation.y = Math.PI;
+              chicken.rotation.y = -Math.PI/2;
 
               chicken.mixer = new THREE.AnimationMixer( chicken );
     					mixers.push( chicken.mixer );
@@ -478,6 +480,10 @@
                 }
             }
 
+            var posgalinha = chicken.getWorldPosition();
+            if (((poscam.x - posgalinha.x) * (poscam.x - posgalinha.x) + (poscam.z - posgalinha.z) * (poscam.z - posgalinha.z)) < 10000) {
+                chickensound.play();
+            }
 
             // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
             if (bola && leitao && tigrao && pote) {
@@ -527,10 +533,6 @@
     					}
     				}
 
-            var chickenX = (2 - maze.width / 2) * maze.cellSize;
-            var chickenY = (14 - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
-            //rotacionar esse negocio
-
             //Bezier da galinha
 
             //PS se a galinha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
@@ -538,7 +540,6 @@
 
             chicken.position.x = chicken.position.xo + 2 *  ((1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3)));
             chicken.position.z = chicken.position.zo + 4 * ((1-t)*((1-t)*((1-t)*y0+t*y1)+t*((1-t)*y1+t*y2))+t*((1-t)*((1-t)*y1+t*y2)+t*((1-t)*y2+t*y3)));
-
 
             var relativeCameraOffset = new THREE.Vector3(0, 100, -75);
             var cameraOffset = relativeCameraOffset.applyMatrix4(pooh.matrixWorld);
