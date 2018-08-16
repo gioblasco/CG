@@ -144,7 +144,7 @@
                         pooh.position.z = (posInitial.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
                         pooh.rotation.y = 0;
                         pooh.scale.set(3.5, 3.5, 3.5);
-                        pooh.visible = true;
+                        pooh.visible = false;
                         scene.add(pooh);
                         console.log("pooh adicionado a scena");
                         pooh_loaded = true;
@@ -152,9 +152,6 @@
                 });
                 return promise;
             }
-
-
-
 
 
             fbxLoader.load('./objects/chicken/gallina.fbx', function (object) {
@@ -182,6 +179,7 @@
                 scene.add(chicken);
                 chicken_loaded = true;
             });
+
 
             var carregar_tigger = function () {
                 var mtlLoader = new THREE.MTLLoader();
@@ -253,8 +251,6 @@
             }
 
 
-
-
             // pote de mel
             var carregar_honey = function () {
                 var mtlLoader = new THREE.MTLLoader();
@@ -300,8 +296,6 @@
         load_resources();
 
         function init() {
-
-
             camera1 = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 1, 10000);
             camera1.position.x = (posInitial.x - maze.width / 2) * maze.cellSize;
             camera1.position.z = (posInitial.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
@@ -467,34 +461,127 @@
             renderer.setSize(window.innerWidth, window.innerHeight * .75);
             window.camera = camera;
             document.body.appendChild(renderer.domElement);
-            document.addEventListener('keydown', onDocumentKeyDown, false);
-
         };
 
         var bola = 0, leitao = 0, tigrao = 0, pote = 0;
 
-        function onDocumentKeyDown(e) {
-            var keyCode = e.which || e.keyCode;
-            //
-            if (keyCode == 38 || keyCode == 87) {
-                camera1.translateZ(-10);
-                //    camera2.translateZ(-30);
+        var Key = {
+            _pressed: {},
+
+            LEFT: 37,
+            UP: 38,
+            RIGHT: 39,
+            DOWN: 40,
+            W: 87,
+            S: 83,
+            A: 65,
+            D: 68,
+            F: 70,
+            SHIFT: 16,
+
+            isDown: function (keyCode) {
+                return this._pressed[keyCode];
+            },
+
+            onKeydown: function (event) {
+                this._pressed[event.keyCode] = true;
+            },
+
+            onKeyup: function (event) {
+                delete this._pressed[event.keyCode];
             }
-            if (keyCode == 39 || keyCode == 68) {
-                angleX += Math.PI / 4;
-            }
-            if (keyCode == 40 || keyCode == 83) {
-                camera1.translateZ(10);
-                //   camera2.translateZ(30);
-            }
-            if (keyCode == 37 || keyCode == 65) {
-                angleX -= Math.PI / 4;
+        };
+
+        window.addEventListener('keyup', function (event) { Key.onKeyup(event); }, false);
+        window.addEventListener('keydown', function (event) { Key.onKeydown(event); }, false);
+
+        function walk() {
+            if (Key.isDown(Key.UP) || Key.isDown(Key.W)) {
+                if (Key.isDown(Key.SHIFT))
+                    camera1.translateZ(-30);
+                else
+                    camera1.translateZ(-10);
             }
 
-            ray = new THREE.Raycaster(camera1.position, center.clone().normalize());
+            if (Key.isDown(Key.RIGHT) || Key.isDown(Key.D)) {
+                angleX += incrementoX * 30;
+            }
+            if (Key.isDown(Key.DOWN) || Key.isDown(Key.S)) {
+                if (Key.isDown(Key.SHIFT))
+                    camera1.translateZ(30);
+                else
+                    camera1.translateZ(10);
+            }
+            if (Key.isDown(Key.LEFT) || Key.isDown(Key.A)) {
+                angleX -= incrementoX * 30;
+            }
+
+            verificaObjetivos();
+
+            if (Key.isDown(Key.F)) {
+                Key._pressed[70] = false;
+                if (camcontrol == 0) {
+                    camera = camera2;
+                    pooh.visible = true;
+                    camcontrol = 1;
+                }
+                else {
+                    camera = camera1;
+                    pooh.visible = false;
+                    camcontrol = 0;
+                }
+            }
+        }
+
+        function animate() {
+            //pontos de controle bezier
+            var x0 = 2.7, y0 = 5.46, x1 = 7.56, y1 = 18.9, x2 = 13.3, y2 = -3.15, x3 = 23.33, y3 = 9.45;
+
+            walk();
+
+            //ajusta centro
+            center.x = windowHalfX * 100 * Math.cos(angleX);
+            center.z = windowHalfX * 100 * Math.sin(angleX);
+
+            id = requestAnimationFrame(animate);
+
+            //roda objetos
+            piglet.rotation.y += 0.01;
+            sphere.rotation.x -= 0.01;
+            tigger.rotation.y += 0.01;
+            honey.rotation.y += 0.02;
+
+            //ajusta posição do pooh
+            pooh.position.copy(camera1.position);
+            pooh.position.y = -250;
+            pooh.lookAt(center);
+            pooh.updateMatrix();
+
+            if (mixers.length > 0) {
+                for (var i = 0; i < mixers.length; i++) {
+                    mixers[i].update(clock.getDelta());
+                }
+            }
+
+            //Bezier da galinha
+            t = Math.abs(Math.sin((Math.floor(Date.now() / 40) % 360 * Math.PI / 180.0)))
+            chicken.position.x = chicken.position.xo + 2 * ((1 - t) * ((1 - t) * ((1 - t) * x0 + t * x1) + t * ((1 - t) * x1 + t * x2)) + t * ((1 - t) * ((1 - t) * x1 + t * x2) + t * ((1 - t) * x2 + t * x3)));
+            chicken.position.z = chicken.position.zo + 4 * ((1 - t) * ((1 - t) * ((1 - t) * y0 + t * y1) + t * ((1 - t) * y1 + t * y2)) + t * ((1 - t) * ((1 - t) * y1 + t * y2) + t * ((1 - t) * y2 + t * y3)));
+
+
+
+            verificaColisoes();
+
+            camera1.lookAt(center);
+            camera2.lookAt(center);
+            renderer.render(scene, camera);
+        };
+
+        function verificaColisoes(){
+            //Do pooh com paredes e objetos:
+            var ray = new THREE.Raycaster(camera1.position, center.clone().normalize());
             ray.far = 200;
 
-            // tamanho do pooh
             boundingBox = new THREE.Box3().setFromObject(pooh);
             sizepooh = boundingBox.getSize(); // Returns Vector3
 
@@ -505,29 +592,66 @@
             posicaoleft = new THREE.Vector3(camera1.position.x - (sizepooh.x/2), camera1.position.y, camera1.position.z - (sizepooh.z/2));
             rayleft = new THREE.Raycaster(posicaoleft, center.clone().normalize());
             rayleft.far = 100;
+            if (ray.intersectObjects(wallGeometries).length > 0) { // Se encostou numa parede, rebobine
+                if (Key.isDown(Key.UP) || Key.isDown(Key.W)) {
+                    if (Key.isDown(Key.SHIFT)) {
+                        camera1.translateZ(30);
+                    }
+                    else {
+                        camera1.translateZ(10);
 
-            // se houver colisão com as paredes
-            if (ray.intersectObjects(wallGeometries).length > 0 || rayright.intersectObjects(wallGeometries).length > 0 || rayleft.intersectObjects(wallGeometries).length > 0) {
-                if (keyCode == 38 || keyCode == 87) {
-                    camera1.translateZ(30);
-                    camera2.translateZ(30);
+                    }
                 }
-                if (keyCode == 39 || keyCode == 68) {
+                if (Key.isDown(Key.RIGHT) || Key.isDown(Key.D)) {
                     camera1.translateX(-30);
-                    camera2.translateX(-30);
                 }
-                if (keyCode == 40 || keyCode == 83) {
-                    camera1.translateZ(-30);
-                    camera2.translateZ(-30);
+                if (Key.isDown(Key.DOWN) || Key.isDown(Key.S)) {
+                    if (Key.isDown(Key.SHIFT)) {
+                        camera1.translateZ(-30);
+                    }
+                    else {
+                        camera1.translateZ(-10);
+                    }
                 }
-                if (keyCode == 37 || keyCode == 65) {
+                if (Key.isDown(Key.LEFT) || Key.isDown(Key.A)) {
                     camera1.translateX(30);
-                    camera2.translateX(30);
+                }
+
+            }
+            else {
+                if (Key.isDown(Key.UP) || Key.isDown(Key.W) || Key.isDown(Key.DOWN) || Key.isDown(Key.S)) // se não balance a cabeça
+                {
+                    angleY += incrementoY;
+                    if (Key.isDown(Key.SHIFT)) {
+                    center.y = 800 * Math.sin(angleY * 80);
+                    }
+                    else{
+                        center.y = 400 * Math.sin(angleY * 80);
+                    }
                 }
             }
 
 
+            //da camera 2 com paredes:
+            var relativeCameraOffset = new THREE.Vector3(0, 100, -75);
+            var cameraOffset = relativeCameraOffset.applyMatrix4(pooh.matrixWorld);
+            camera2.position.x = cameraOffset.x;
+            camera2.position.z = cameraOffset.z;
+            
+            ray2 = new THREE.Raycaster(camera2.position, center.clone().normalize());
+            ray2.far = 300;
+            // se houver colisão com as paredes
+            if (ray2.intersectObjects(wallGeometries).length > 0) {
+                camera = camera1;
+                pooh.visible = false;
+            }
+            else if (camcontrol == 1 && camera == camera1) {
+                camera = camera2;
+                pooh.visible = true;
+            }
+        };
 
+        function verificaObjetivos(){
             var poscam = camera1.position;
             // se houver colisão com os objetos
             if (!leitao) {
@@ -582,79 +706,7 @@
                 back.pause();
                 win.play()
             }
-
-            if (keyCode == 70) {
-                if (camcontrol == 0) {
-                    camera = camera2;
-                    pooh.visible = true;
-                    camcontrol = 1;
-                }
-                else {
-                    camera = camera1;
-                    pooh.visible = false;
-                    camcontrol = 0;
-                }
-            }
         };
-
-        function animate() {
-
-            //pontos de controle bezier
-            var x0 = 2.7, y0 = 5.46, x1 = 7.56, y1 = 18.9, x2 = 13.3, y2 = -3.15, x3 = 23.33, y3 = 9.45;
-
-            center.x = windowHalfX * 100 * Math.cos(angleX);
-            center.z = windowHalfX * 100 * Math.sin(angleX);
-
-            id = requestAnimationFrame(animate);
-
-            piglet.rotation.y += 0.01;
-            sphere.rotation.x -= 0.01;
-            tigger.rotation.y += 0.01;
-            honey.rotation.y += 0.02;
-
-            pooh.position.copy(camera1.position);
-            pooh.position.y = -250;
-            pooh.lookAt(center);
-            pooh.updateMatrix();
-
-            if (mixers.length > 0) {
-                for (var i = 0; i < mixers.length; i++) {
-                    mixers[i].update(clock.getDelta());
-                }
-            }
-
-            //Bezier da galinha
-
-            //PS se a galinha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
-            t = Math.abs(Math.sin((Math.floor(Date.now() / 40) % 360 * Math.PI / 180.0)))
-
-            chicken.position.x = chicken.position.xo + 2 * ((1 - t) * ((1 - t) * ((1 - t) * x0 + t * x1) + t * ((1 - t) * x1 + t * x2)) + t * ((1 - t) * ((1 - t) * x1 + t * x2) + t * ((1 - t) * x2 + t * x3)));
-            chicken.position.z = chicken.position.zo + 4 * ((1 - t) * ((1 - t) * ((1 - t) * y0 + t * y1) + t * ((1 - t) * y1 + t * y2)) + t * ((1 - t) * ((1 - t) * y1 + t * y2) + t * ((1 - t) * y2 + t * y3)));
-
-            var relativeCameraOffset = new THREE.Vector3(0, 100, -75);
-            var cameraOffset = relativeCameraOffset.applyMatrix4(pooh.matrixWorld);
-
-            camera2.position.x = cameraOffset.x;
-            camera2.position.z = cameraOffset.z;
-
-            var control = 0;
-            ray2 = new THREE.Raycaster(camera2.position, center.clone().normalize());
-            ray2.far = 300;
-            // se houver colisão com as paredes
-            if (ray2.intersectObjects(wallGeometries).length > 0) {
-                camera = camera1;
-                pooh.visible = false;
-            }
-            else if (camcontrol == 1 && camera == camera1) {
-                camera = camera2;
-                pooh.visible = true;
-            }
-
-            camera1.lookAt(center);
-            camera2.lookAt(center);
-            renderer.render(scene, camera);
-        };
-
     </script>
 </body>
 
