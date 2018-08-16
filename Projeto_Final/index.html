@@ -204,7 +204,7 @@
                         tigger.position.z = (posTigrao.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
                         tigger.position.y = -250;
                         tigger.position.x = (posTigrao.x - maze.width / 2) * maze.cellSize - 250;
-                        tigger.scale.set(3, 3, 3);
+                        tigger.scale.set(4, 4, 4);
                         tigger.rotation.y = -Math.PI/2;
                         tigger.visible = true;
                         scene.add(tigger);
@@ -704,7 +704,7 @@
                 document.getElementById("fim").style.display = 'block';
                 cancelAnimationFrame(id);
                 back.pause();
-                win.play()
+                win.play();
             }
         };
     </script>
