@@ -491,11 +491,23 @@
                 angleX -= Math.PI / 4;
             }
 
-
             ray = new THREE.Raycaster(camera1.position, center.clone().normalize());
             ray.far = 200;
+
+            // tamanho do pooh
+            boundingBox = new THREE.Box3().setFromObject(pooh);
+            sizepooh = boundingBox.getSize(); // Returns Vector3
+
+            posicaoright = new THREE.Vector3(camera1.position.x + (sizepooh.x/2), camera1.position.y, camera1.position.z + (sizepooh.z/2));
+            rayright = new THREE.Raycaster(posicaoright, center.clone().normalize());
+            rayright.far = 100;
+
+            posicaoleft = new THREE.Vector3(camera1.position.x - (sizepooh.x/2), camera1.position.y, camera1.position.z - (sizepooh.z/2));
+            rayleft = new THREE.Raycaster(posicaoleft, center.clone().normalize());
+            rayleft.far = 100;
+
             // se houver colisão com as paredes
-            if (ray.intersectObjects(wallGeometries).length > 0) {
+            if (ray.intersectObjects(wallGeometries).length > 0 || rayright.intersectObjects(wallGeometries).length > 0 || rayleft.intersectObjects(wallGeometries).length > 0) {
                 if (keyCode == 38 || keyCode == 87) {
                     camera1.translateZ(30);
                     camera2.translateZ(30);
@@ -514,10 +526,6 @@
                 }
             }
 
-            // else {
-            //     //angleY += incrementoY;
-            //     //center.y = Math.sin(angleY * 80);
-            // }
 
 
             var poscam = camera1.position;
