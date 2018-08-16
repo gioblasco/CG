@@ -107,7 +107,7 @@
         }
         function load_resources() {
             scene = new THREE.Scene();
-            
+
             var fbxLoader = new THREE.FBXLoader();
 
 
@@ -156,7 +156,7 @@
 
 
 
-            
+
             fbxLoader.load('./objects/chicken/gallina.fbx', function (object) {
                 chicken = object;
                 chicken.position.z = (posChicken.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
@@ -204,9 +204,10 @@
                     }).then(function (object) {
                         tigger = object;
                         tigger.position.z = (posTigrao.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
-                        tigger.position.y = -210;
+                        tigger.position.y = -250;
                         tigger.position.x = (posTigrao.x - maze.width / 2) * maze.cellSize - 250;
                         tigger.scale.set(3, 3, 3);
+                        tigger.rotation.y = -Math.PI/2;
                         tigger.visible = true;
                         scene.add(tigger);
                         console.log("tigger adicionado a scena");
@@ -238,10 +239,11 @@
                     }).then(function (object) {
                         piglet = object;
                         piglet.position.z = (posLeitao.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
-                        piglet.position.y = -210;
+                        piglet.position.y = -250;
                         piglet.position.x = (posLeitao.x - maze.width / 2) * maze.cellSize - 250;
                         piglet.scale.set(6, 6, 6);
                         piglet.visible = true;
+                        piglet.rotation.y = Math.PI;
                         scene.add(piglet);
                         console.log("piglet adicionado a scena");
                         piglet_loaded = true;
@@ -351,6 +353,7 @@
             sphere = new THREE.Mesh(geometrySphere, new THREE.MeshPhongMaterial({ map: new THREE.TextureLoader().load('textures/ball_texture.png') }));
             sphere.position.z = (posBola.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
             sphere.position.x = (posBola.x - maze.width / 2) * maze.cellSize - 250;
+            sphere.position.y = -50;
 
             // objeto para o plano superior
             plane = new THREE.Mesh(geometryPlane, material);
@@ -596,10 +599,10 @@
 
             id = requestAnimationFrame(animate);
 
-            // piglet.rotation.y += 0.01;
+            piglet.rotation.y += 0.01;
             sphere.rotation.x -= 0.01;
-            // tigger.rotation.y += 0.01;
-            // honey.rotation.y += 0.02;
+            tigger.rotation.y += 0.01;
+            honey.rotation.y += 0.02;
 
             pooh.position.copy(camera1.position);
             pooh.position.y = -250;
@@ -615,10 +618,10 @@
             //Bezier da galinha
 
             //PS se a galinha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
-            t = Math.abs(Math.sin((Math.floor(Date.now() / 10) % 360 * Math.PI / 180.0)))
+            t = Math.abs(Math.sin((Math.floor(Date.now() / 40) % 360 * Math.PI / 180.0)))
 
-            // chicken.position.x = chicken.position.xo + 2 * ((1 - t) * ((1 - t) * ((1 - t) * x0 + t * x1) + t * ((1 - t) * x1 + t * x2)) + t * ((1 - t) * ((1 - t) * x1 + t * x2) + t * ((1 - t) * x2 + t * x3)));
-            // chicken.position.z = chicken.position.zo + 4 * ((1 - t) * ((1 - t) * ((1 - t) * y0 + t * y1) + t * ((1 - t) * y1 + t * y2)) + t * ((1 - t) * ((1 - t) * y1 + t * y2) + t * ((1 - t) * y2 + t * y3)));
+            chicken.position.x = chicken.position.xo + 2 * ((1 - t) * ((1 - t) * ((1 - t) * x0 + t * x1) + t * ((1 - t) * x1 + t * x2)) + t * ((1 - t) * ((1 - t) * x1 + t * x2) + t * ((1 - t) * x2 + t * x3)));
+            chicken.position.z = chicken.position.zo + 4 * ((1 - t) * ((1 - t) * ((1 - t) * y0 + t * y1) + t * ((1 - t) * y1 + t * y2)) + t * ((1 - t) * ((1 - t) * y1 + t * y2) + t * ((1 - t) * y2 + t * y3)));
 
             var relativeCameraOffset = new THREE.Vector3(0, 100, -75);
             var cameraOffset = relativeCameraOffset.applyMatrix4(pooh.matrixWorld);
