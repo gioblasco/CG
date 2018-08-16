@@ -37,7 +37,7 @@
         </h3>
     </div>
 
-    <div id="fim" style="margin-top: 20em; margin-bottom: 40em; color:lightblue">
+    <div id="fim" style="margin-top: 20em; margin-bottom: 40em; color:purple">
         <h1> Parabéns! Você ajudou o Pooh a achar tudo o que ele queria e agora ele está muito feliz! </h1>
     </div>
 
@@ -702,8 +702,9 @@
             }
 
             // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
-            if (bola && leitao && tigrao && pote && !ganhou) {
+            if (bola && !ganhou) {
                 ganhou = 1;
+                document.getElementById("fim").style.color = 'lightblue';
                 document.getElementById("fim").style.display = 'block';
                 cancelAnimationFrame(id);
                 back.pause();
