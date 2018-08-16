@@ -592,7 +592,7 @@
             posicaoleft = new THREE.Vector3(camera1.position.x - (sizepooh.x/2), camera1.position.y, camera1.position.z - (sizepooh.z/2));
             rayleft = new THREE.Raycaster(posicaoleft, center.clone().normalize());
             rayleft.far = 100;
-            if (ray.intersectObjects(wallGeometries).length > 0) { // Se encostou numa parede, rebobine
+            if (ray.intersectObjects(wallGeometries).length > 0 || rayright.intersectObjects(wallGeometries).length > 0 || rayleft.intersectObjects(wallGeometries).length > 0) { // Se encostou numa parede, rebobine
                 if (Key.isDown(Key.UP) || Key.isDown(Key.W)) {
                     if (Key.isDown(Key.SHIFT)) {
                         camera1.translateZ(30);
@@ -637,7 +637,7 @@
             var cameraOffset = relativeCameraOffset.applyMatrix4(pooh.matrixWorld);
             camera2.position.x = cameraOffset.x;
             camera2.position.z = cameraOffset.z;
-            
+
             ray2 = new THREE.Raycaster(camera2.position, center.clone().normalize());
             ray2.far = 300;
             // se houver colisão com as paredes
