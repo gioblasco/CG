@@ -31,7 +31,8 @@
 
     <div id="inicio" style="margin-top: 20em; color:lightblue">
         <h3>
-            <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla Espaço</span>
+            <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla
+                Espaço</span>
         </h3>
     </div>
 
@@ -242,30 +243,30 @@
             var posAbelha = { x: 4, z: 14 };
 
             var loader = new THREE.FBXLoader();
-    				loader.load( './objects/chicken/gallina.fbx', function( object ) {
-              chicken = object;
-              chicken.position.z = (posAbelha.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
-              chicken.position.zo = chicken.position.z; // o stands for original
-              chicken.position.y = -250;
-              chicken.position.x = (posAbelha.x - maze.width / 2) * maze.cellSize - 200;
-              chicken.position.xo = chicken.position.x; // o stands for original
-              chicken.rotation.y = -Math.PI/2;
+            loader.load('./objects/chicken/gallina.fbx', function (object) {
+                chicken = object;
+                chicken.position.z = (posAbelha.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
+                chicken.position.zo = chicken.position.z; // o stands for original
+                chicken.position.y = -250;
+                chicken.position.x = (posAbelha.x - maze.width / 2) * maze.cellSize - 200;
+                chicken.position.xo = chicken.position.x; // o stands for original
+                chicken.rotation.y = -Math.PI / 2;
 
-              chicken.mixer = new THREE.AnimationMixer( chicken );
-    					mixers.push( chicken.mixer );
-              if (mixers.length > 0) {
-      					for (var i = 0; i < chicken.animations.length; i ++) {
-    					         chicken.mixer.clipAction(chicken.animations[i]).play();
+                chicken.mixer = new THREE.AnimationMixer(chicken);
+                mixers.push(chicken.mixer);
+                if (mixers.length > 0) {
+                    for (var i = 0; i < chicken.animations.length; i++) {
+                        chicken.mixer.clipAction(chicken.animations[i]).play();
+                    }
                 }
-              }
-    					chicken.traverse( function ( child ) {
-    						if ( child.isMesh ) {
-    							child.castShadow = true;
-    							child.receiveShadow = true;
-    						}
-    					} );
-              scene.add(chicken);
-    				} );
+                chicken.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+                scene.add(chicken);
+            });
 
             // objeto simples para a bola
             var posBola = { x: 1, z: 5 };
@@ -527,19 +528,19 @@
             pooh.lookAt(center);
             pooh.updateMatrix();
 
-            if ( mixers.length > 0 ) {
-    					for ( var i = 0; i < mixers.length; i ++ ) {
-    						mixers[i].update(clock.getDelta());
-    					}
-    				}
+            if (mixers.length > 0) {
+                for (var i = 0; i < mixers.length; i++) {
+                    mixers[i].update(clock.getDelta());
+                }
+            }
 
             //Bezier da galinha
 
             //PS se a galinha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
-            t = Math.abs(Math.sin((Math.floor(Date.now()/10)%360 * Math.PI / 180.0)))
+            t = Math.abs(Math.sin((Math.floor(Date.now() / 10) % 360 * Math.PI / 180.0)))
 
-            chicken.position.x = chicken.position.xo + 2 *  ((1-t)*((1-t)*((1-t)*x0+t*x1)+t*((1-t)*x1+t*x2))+t*((1-t)*((1-t)*x1+t*x2)+t*((1-t)*x2+t*x3)));
-            chicken.position.z = chicken.position.zo + 4 * ((1-t)*((1-t)*((1-t)*y0+t*y1)+t*((1-t)*y1+t*y2))+t*((1-t)*((1-t)*y1+t*y2)+t*((1-t)*y2+t*y3)));
+            chicken.position.x = chicken.position.xo + 2 * ((1 - t) * ((1 - t) * ((1 - t) * x0 + t * x1) + t * ((1 - t) * x1 + t * x2)) + t * ((1 - t) * ((1 - t) * x1 + t * x2) + t * ((1 - t) * x2 + t * x3)));
+            chicken.position.z = chicken.position.zo + 4 * ((1 - t) * ((1 - t) * ((1 - t) * y0 + t * y1) + t * ((1 - t) * y1 + t * y2)) + t * ((1 - t) * ((1 - t) * y1 + t * y2) + t * ((1 - t) * y2 + t * y3)));
 
             var relativeCameraOffset = new THREE.Vector3(0, 100, -75);
             var cameraOffset = relativeCameraOffset.applyMatrix4(pooh.matrixWorld);
