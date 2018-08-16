@@ -702,7 +702,7 @@
             }
 
             // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
-            if (bola && !ganhou) {
+            if (bola && leitao && tigrao && pote) {
                 ganhou = 1;
                 document.getElementById("fim").style.color = 'lightblue';
                 document.getElementById("fim").style.display = 'block';
