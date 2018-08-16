@@ -57,6 +57,8 @@
         var camera, take, scene, renderer, geometry, material, piglet, tigger, honey, bee, pooh, sphere, light, plane,
             plane2, center, id;
 
+        var ganhou = 0;
+
         var mixers = [];
         var clock = new THREE.Clock();
 
@@ -534,47 +536,47 @@
         }
 
         function animate() {
-            //pontos de controle bezier
-            var x0 = 2.7, y0 = 5.46, x1 = 7.56, y1 = 18.9, x2 = 13.3, y2 = -3.15, x3 = 23.33, y3 = 9.45;
+            if(!ganhou){
+              //pontos de controle bezier
+              var x0 = 2.7, y0 = 5.46, x1 = 7.56, y1 = 18.9, x2 = 13.3, y2 = -3.15, x3 = 23.33, y3 = 9.45;
 
-            walk();
+              walk();
 
-            //ajusta centro
-            center.x = windowHalfX * 100 * Math.cos(angleX);
-            center.z = windowHalfX * 100 * Math.sin(angleX);
+              //ajusta centro
+              center.x = windowHalfX * 100 * Math.cos(angleX);
+              center.z = windowHalfX * 100 * Math.sin(angleX);
 
-            id = requestAnimationFrame(animate);
+              id = requestAnimationFrame(animate);
 
-            //roda objetos
-            piglet.rotation.y += 0.01;
-            sphere.rotation.x -= 0.01;
-            tigger.rotation.y += 0.01;
-            honey.rotation.y += 0.02;
+              //roda objetos
+              piglet.rotation.y += 0.01;
+              sphere.rotation.x -= 0.01;
+              tigger.rotation.y += 0.01;
+              honey.rotation.y += 0.02;
 
-            //ajusta posição do pooh
-            pooh.position.copy(camera1.position);
-            pooh.position.y = -250;
-            pooh.lookAt(center);
-            pooh.updateMatrix();
+              //ajusta posição do pooh
+              pooh.position.copy(camera1.position);
+              pooh.position.y = -250;
+              pooh.lookAt(center);
+              pooh.updateMatrix();
 
-            if (mixers.length > 0) {
-                for (var i = 0; i < mixers.length; i++) {
-                    mixers[i].update(clock.getDelta());
-                }
+              if (mixers.length > 0) {
+                  for (var i = 0; i < mixers.length; i++) {
+                      mixers[i].update(clock.getDelta());
+                  }
+              }
+
+              //Bezier da galinha
+              t = Math.abs(Math.sin((Math.floor(Date.now() / 40) % 360 * Math.PI / 180.0)))
+              chicken.position.x = chicken.position.xo + 2 * ((1 - t) * ((1 - t) * ((1 - t) * x0 + t * x1) + t * ((1 - t) * x1 + t * x2)) + t * ((1 - t) * ((1 - t) * x1 + t * x2) + t * ((1 - t) * x2 + t * x3)));
+              chicken.position.z = chicken.position.zo + 4 * ((1 - t) * ((1 - t) * ((1 - t) * y0 + t * y1) + t * ((1 - t) * y1 + t * y2)) + t * ((1 - t) * ((1 - t) * y1 + t * y2) + t * ((1 - t) * y2 + t * y3)));
+
+              verificaColisoes();
+
+              camera1.lookAt(center);
+              camera2.lookAt(center);
+              renderer.render(scene, camera);
             }
-
-            //Bezier da galinha
-            t = Math.abs(Math.sin((Math.floor(Date.now() / 40) % 360 * Math.PI / 180.0)))
-            chicken.position.x = chicken.position.xo + 2 * ((1 - t) * ((1 - t) * ((1 - t) * x0 + t * x1) + t * ((1 - t) * x1 + t * x2)) + t * ((1 - t) * ((1 - t) * x1 + t * x2) + t * ((1 - t) * x2 + t * x3)));
-            chicken.position.z = chicken.position.zo + 4 * ((1 - t) * ((1 - t) * ((1 - t) * y0 + t * y1) + t * ((1 - t) * y1 + t * y2)) + t * ((1 - t) * ((1 - t) * y1 + t * y2) + t * ((1 - t) * y2 + t * y3)));
-
-
-
-            verificaColisoes();
-
-            camera1.lookAt(center);
-            camera2.lookAt(center);
-            renderer.render(scene, camera);
         };
 
         function verificaColisoes(){
@@ -700,7 +702,9 @@
             }
 
             // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
-            if (bola && leitao && tigrao && pote) {
+            //if (bola && leitao && tigrao && pote && !ganhou) {
+            if (bola && !ganhou) {
+                ganhou = 1;
                 document.getElementById("fim").style.display = 'block';
                 cancelAnimationFrame(id);
                 back.pause();
