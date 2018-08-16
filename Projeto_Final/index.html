@@ -641,7 +641,7 @@
             camera2.position.z = cameraOffset.z;
 
             ray2 = new THREE.Raycaster(camera2.position, center.clone().normalize());
-            ray2.far = 300;
+            ray2.far = 250;
             // se houver colisão com as paredes
             if (ray2.intersectObjects(wallGeometries).length > 0) {
                 camera = camera1;
@@ -702,8 +702,7 @@
             }
 
             // verifica se já encontrou todos os objetos (nao funciona com contador, tem que ser um pra cada obj)
-            //if (bola && leitao && tigrao && pote && !ganhou) {
-            if (bola && !ganhou) {
+            if (bola && leitao && tigrao && pote && !ganhou) {
                 ganhou = 1;
                 document.getElementById("fim").style.display = 'block';
                 cancelAnimationFrame(id);
