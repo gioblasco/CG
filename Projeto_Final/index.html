@@ -32,7 +32,8 @@
     <div id="inicio" style="margin-top: 20em; color:lightblue">
         <h3>
             <span style="border: 1px solid white; border-radius: 10px; padding: 2em;">Para iniciar o jogo, pressione a tecla
-                Espaço</span>
+                Espaço
+            </span>
         </h3>
     </div>
 
@@ -68,9 +69,6 @@
 
         var chickensound = new Audio('./sounds/chicken.mp3');
 
-        // var mouseX = 0,
-        //     mouseY = 0,
-        //     mouseZ = 0;
 
         var maze = { width: 15, large: 15, cellSize: 500 };
 
@@ -90,19 +88,217 @@
         window.wallGeometries = [];
 
         document.onkeydown = checaInicio;
+        pooh_loaded = false;
+        chicken_loaded = false;
+        piglet_loaded = false;
+        tigger_loaded = false;
 
         // detecta espaço, remove a div de inicio e começa o jogo
         function checaInicio(e) {
             if (e.keyCode == '32') {
                 document.getElementById("inicio").remove();
                 back.play();
-                init();
+                if (pooh_loaded && chicken_loaded)
+                    init();
+                else
+                    console.log("Wait a moment!");
+
             }
         }
+        function load_resources() {
+            scene = new THREE.Scene();
+            
+            var fbxLoader = new THREE.FBXLoader();
+
+
+            function Loadingando() { };
+            function loaderError(err) { console.log("Erro ao carregar! Erro:"); console.log(err) };
+            var posLeitao = { x: 8, z: 4 };
+            var posTigrao = { x: 12, z: 2 };
+            var posChicken = { x: 4, z: 14 };
+            var posMel = { x: 12, z: 14 };
+
+
+            var carregar_pooh = function () {
+                var mtlLoader = new THREE.MTLLoader();
+                var objLoader = new THREE.OBJLoader();
+                var promise = new Promise(function (resolve) {
+                    function loadDone(material) {
+                        material.preload();
+                        resolve(material);
+                    }
+                    mtlLoader.setPath("./objects/pooh/");
+                    mtlLoader.load("Pooh.mtl", loadDone, Loadingando, loaderError);
+                }).then(function (material) {
+                    return new Promise(function (resolve) {
+                        objLoader.setMaterials(material);
+                        function afterLoad(object) {
+                            resolve(object);
+                        }
+                        objLoader.setPath("./objects/pooh/");
+                        objLoader.load('Pooh.obj', afterLoad, Loadingando, loaderError);
+                    }).then(function (object) {
+                        pooh = object;
+                        pooh.position.x = (posInitial.x - maze.width / 2) * maze.cellSize;
+                        pooh.position.y = -250;
+                        pooh.position.z = (posInitial.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
+                        pooh.rotation.y = 0;
+                        pooh.scale.set(3.5, 3.5, 3.5);
+                        pooh.visible = true;
+                        scene.add(pooh);
+                        console.log("pooh adicionado a scena");
+                        pooh_loaded = true;
+                    });
+                });
+                return promise;
+            }
+
+
+
+
+            
+            fbxLoader.load('./objects/chicken/gallina.fbx', function (object) {
+                chicken = object;
+                chicken.position.z = (posChicken.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
+                chicken.position.zo = chicken.position.z; // o stands for original
+                chicken.position.y = -250;
+                chicken.position.x = (posChicken.x - maze.width / 2) * maze.cellSize - 200;
+                chicken.position.xo = chicken.position.x; // o stands for original
+                chicken.rotation.y = -Math.PI / 2;
+
+                chicken.mixer = new THREE.AnimationMixer(chicken);
+                mixers.push(chicken.mixer);
+                if (mixers.length > 0) {
+                    for (var i = 0; i < chicken.animations.length; i++) {
+                        chicken.mixer.clipAction(chicken.animations[i]).play();
+                    }
+                }
+                chicken.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+                scene.add(chicken);
+                chicken_loaded = true;
+            });
+
+            var carregar_tigger = function () {
+                var mtlLoader = new THREE.MTLLoader();
+            var objLoader = new THREE.OBJLoader();
+                var promise = new Promise(function (resolve) {
+                    function loadDone(material) {
+                        material.preload();
+                        resolve(material);
+                    }
+                    mtlLoader.setPath("./objects/tigger/");
+                    mtlLoader.load("Tigger.mtl", loadDone, Loadingando, loaderError);
+                }).then(function (material) {
+                    return new Promise(function (resolve) {
+                        function afterLoad(object) {
+                            resolve(object);
+                        }
+                        objLoader.setMaterials(material);
+                        objLoader.setPath("./objects/tigger/");
+                        objLoader.load('Tigger.obj', afterLoad, Loadingando, loaderError);
+                    }).then(function (object) {
+                        tigger = object;
+                        tigger.position.z = (posTigrao.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
+                        tigger.position.y = -210;
+                        tigger.position.x = (posTigrao.x - maze.width / 2) * maze.cellSize - 250;
+                        tigger.scale.set(3, 3, 3);
+                        tigger.visible = true;
+                        scene.add(tigger);
+                        console.log("tigger adicionado a scena");
+                        tigger_loaded = true;
+                    });
+                });
+                return promise;
+            }
+
+
+            var carregar_piglet = function () {
+                var mtlLoader = new THREE.MTLLoader();
+            var objLoader = new THREE.OBJLoader();
+                var promise = new Promise(function (resolve) {
+                    function loadDone(material) {
+                        material.preload();
+                        resolve(material);
+                    }
+                    mtlLoader.setPath("./objects/piglet/");
+                    mtlLoader.load("Piglet.mtl", loadDone, Loadingando, loaderError);
+                }).then(function (material) {
+                    return new Promise(function (resolve) {
+                        function afterLoad(object) {
+                            resolve(object);
+                        }
+                        objLoader.setMaterials(material);
+                        objLoader.setPath("./objects/piglet/");
+                        objLoader.load('Piglet.obj', afterLoad, Loadingando, loaderError);
+                    }).then(function (object) {
+                        piglet = object;
+                        piglet.position.z = (posLeitao.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
+                        piglet.position.y = -210;
+                        piglet.position.x = (posLeitao.x - maze.width / 2) * maze.cellSize - 250;
+                        piglet.scale.set(6, 6, 6);
+                        piglet.visible = true;
+                        scene.add(piglet);
+                        console.log("piglet adicionado a scena");
+                        piglet_loaded = true;
+                    });
+                });
+                return promise;
+            }
+
+
+
+
+            // pote de mel
+            var carregar_honey = function () {
+                var mtlLoader = new THREE.MTLLoader();
+            var objLoader = new THREE.OBJLoader();
+                var texture = new THREE.TextureLoader().load('./objects/honey.jpg');
+                var promise = new Promise(function (resolve) {
+                    function loadDone(material) {
+                        material.preload();
+                        resolve(material);
+                    }
+                    mtlLoader.setPath("./objects/");
+                    mtlLoader.load("honeyjar2.mtl", loadDone, Loadingando, loaderError);
+                }).then(function (material) {
+                    return new Promise(function (resolve) {
+                        function afterLoad(object) {
+                            resolve(object);
+                        }
+                        objLoader.setMaterials(material);
+                        objLoader.setPath("./objects/");
+                        objLoader.load('honeyjar2.obj', afterLoad, Loadingando, loaderError);
+                    }).then(function (object) {
+                        honey = object;
+                        honey.position.z = (posMel.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
+                        honey.position.y = -200;
+                        honey.position.x = (posMel.x - maze.width / 2) * maze.cellSize - 250;
+                        honey.scale.set(20, 20, 20);
+                        honey.traverse(function (node) {
+                            if (node.isMesh)
+                                node.material.map = texture;
+                        });
+                        scene.add(honey);
+                        console.log("honey adicionado a scena");
+                        honey_loaded = true;
+                    });
+                });
+                return promise;
+            }
+
+            // PULO DO GATO:
+            carregar_pooh().then(carregar_honey()).then(carregar_piglet()).then(carregar_tigger());
+        }
+
+        load_resources();
 
         function init() {
 
-            scene = new THREE.Scene();
 
             camera1 = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 1, 10000);
             camera1.position.x = (posInitial.x - maze.width / 2) * maze.cellSize;
@@ -149,124 +345,6 @@
             wallTexture.wrapS = THREE.RepeatWrapping;
             wallTexture.wrapT = THREE.RepeatWrapping;
             wallTexture.needsUpdate = true;
-
-            var mtlPooh = new THREE.MTLLoader();
-
-            // pooh
-            mtlPooh.setPath("./objects/pooh/");
-            mtlPooh.load('Pooh.mtl', function (materials) {
-                materials.preload();
-                var objLoader = new THREE.OBJLoader();
-                objLoader.setMaterials(materials);
-                objLoader.setPath("./objects/pooh/");
-                objLoader.load('Pooh.obj', function (object) {
-                    pooh = object;
-                    pooh.position.x = (posInitial.x - maze.width / 2) * maze.cellSize;
-                    pooh.position.y = -250;
-                    pooh.position.z = (posInitial.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
-                    pooh.rotation.y = 0;
-                    pooh.scale.set(3.5, 3.5, 3.5);
-                    pooh.visible = true;
-                    scene.add(pooh);
-                });
-
-            });
-
-            var mtlPiglet = new THREE.MTLLoader();
-
-            // leitão
-            var posLeitao = { x: 8, z: 4 };
-            mtlPiglet.setPath("./objects/piglet/");
-            mtlPiglet.load('Piglet.mtl', function (materials) {
-                materials.preload();
-                var objLoader = new THREE.OBJLoader();
-                objLoader.setMaterials(materials);
-                objLoader.setPath("./objects/piglet/");
-                objLoader.load('Piglet.obj', function (object) {
-                    piglet = object;
-                    piglet.position.z = (posLeitao.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
-                    piglet.position.y = -210;
-                    piglet.position.x = (posLeitao.x - maze.width / 2) * maze.cellSize - 250;
-                    piglet.scale.set(6, 6, 6);
-                    scene.add(piglet);
-                });
-
-            });
-
-            var mtlTigger = new THREE.MTLLoader();
-
-            // tigrão
-            var posTigrao = { x: 12, z: 2 };
-            mtlTigger.setPath("./objects/tigger/");
-            mtlTigger.load('Tigger.mtl', function (materials) {
-                materials.preload();
-                var objLoader = new THREE.OBJLoader();
-                objLoader.setMaterials(materials);
-                objLoader.setPath("./objects/tigger/");
-                objLoader.load('Tigger.obj', function (object) {
-                    tigger = object;
-                    tigger.position.z = (posTigrao.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
-                    tigger.position.y = -210;
-                    tigger.position.x = (posTigrao.x - maze.width / 2) * maze.cellSize - 250;
-                    tigger.scale.set(3, 3, 3);
-                    scene.add(tigger);
-                });
-
-            });
-
-            var mtlHoney = new THREE.MTLLoader();
-
-            // pote de mel
-            var posMel = { x: 12, z: 14 };
-            var texture = new THREE.TextureLoader().load('./objects/honey.jpg');
-            //var textureHoney = new THREE.MeshBasicMaterial({ map: texture });
-
-            var objLoader = new THREE.OBJLoader();
-            objLoader.setPath("./objects/");
-            objLoader.load('honeyjar2.obj', function (object) {
-                honey = object;
-                honey.position.z = (posMel.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2 + 50;
-                honey.position.y = -200;
-                honey.position.x = (posMel.x - maze.width / 2) * maze.cellSize - 250;
-                honey.scale.set(20, 20, 20);
-                honey.traverse(function (node) {
-                    if (node.isMesh)
-                        node.material.map = texture;
-                });
-                scene.add(honey);
-            });
-
-
-            var mtlBee = new THREE.MTLLoader();
-
-            // abelha
-            var posAbelha = { x: 4, z: 14 };
-
-            var loader = new THREE.FBXLoader();
-            loader.load('./objects/chicken/gallina.fbx', function (object) {
-                chicken = object;
-                chicken.position.z = (posAbelha.z - maze.large / 2) * maze.cellSize - maze.cellSize / 2;
-                chicken.position.zo = chicken.position.z; // o stands for original
-                chicken.position.y = -250;
-                chicken.position.x = (posAbelha.x - maze.width / 2) * maze.cellSize - 200;
-                chicken.position.xo = chicken.position.x; // o stands for original
-                chicken.rotation.y = -Math.PI / 2;
-
-                chicken.mixer = new THREE.AnimationMixer(chicken);
-                mixers.push(chicken.mixer);
-                if (mixers.length > 0) {
-                    for (var i = 0; i < chicken.animations.length; i++) {
-                        chicken.mixer.clipAction(chicken.animations[i]).play();
-                    }
-                }
-                chicken.traverse(function (child) {
-                    if (child.isMesh) {
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                    }
-                });
-                scene.add(chicken);
-            });
 
             // objeto simples para a bola
             var posBola = { x: 1, z: 5 };
@@ -518,10 +596,10 @@
 
             id = requestAnimationFrame(animate);
 
-            piglet.rotation.y += 0.01;
+            // piglet.rotation.y += 0.01;
             sphere.rotation.x -= 0.01;
-            tigger.rotation.y += 0.01;
-            honey.rotation.y += 0.02;
+            // tigger.rotation.y += 0.01;
+            // honey.rotation.y += 0.02;
 
             pooh.position.copy(camera1.position);
             pooh.position.y = -250;
@@ -539,8 +617,8 @@
             //PS se a galinha estiver se movendo muito rápida, mudar a divisão de 10 para 20,30 e etc.
             t = Math.abs(Math.sin((Math.floor(Date.now() / 10) % 360 * Math.PI / 180.0)))
 
-            chicken.position.x = chicken.position.xo + 2 * ((1 - t) * ((1 - t) * ((1 - t) * x0 + t * x1) + t * ((1 - t) * x1 + t * x2)) + t * ((1 - t) * ((1 - t) * x1 + t * x2) + t * ((1 - t) * x2 + t * x3)));
-            chicken.position.z = chicken.position.zo + 4 * ((1 - t) * ((1 - t) * ((1 - t) * y0 + t * y1) + t * ((1 - t) * y1 + t * y2)) + t * ((1 - t) * ((1 - t) * y1 + t * y2) + t * ((1 - t) * y2 + t * y3)));
+            // chicken.position.x = chicken.position.xo + 2 * ((1 - t) * ((1 - t) * ((1 - t) * x0 + t * x1) + t * ((1 - t) * x1 + t * x2)) + t * ((1 - t) * ((1 - t) * x1 + t * x2) + t * ((1 - t) * x2 + t * x3)));
+            // chicken.position.z = chicken.position.zo + 4 * ((1 - t) * ((1 - t) * ((1 - t) * y0 + t * y1) + t * ((1 - t) * y1 + t * y2)) + t * ((1 - t) * ((1 - t) * y1 + t * y2) + t * ((1 - t) * y2 + t * y3)));
 
             var relativeCameraOffset = new THREE.Vector3(0, 100, -75);
             var cameraOffset = relativeCameraOffset.applyMatrix4(pooh.matrixWorld);
